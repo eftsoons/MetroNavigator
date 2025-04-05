@@ -1,0 +1,32 @@
+# Logs
+/mos/logs/
+/mos/*.log
+/mos/npm-debug.log*
+/mos/yarn-debug.log*
+/mos/yarn-error.log*
+/mos/pnpm-debug.log*
+/mos/lerna-debug.log*
+
+/mos/node_modules/
+/mos/dist/
+/mos/dist-ssr/
+/mos/*.local
+
+# Editor directories and files
+/mos/.vscode/*
+/mos/!.vscode/extensions.json
+/mos/.idea
+/mos/.DS_Store
+/mos/*.suo
+/mos/*.ntvs*
+/mos/*.njsproj
+/mos/*.sln
+/mos/*.sw?
+
+/mos/*.pem
+/mos/.env
+
+/backend/dist/
+/backend/node_modules/
+/backend/.env
+/settingsserver
