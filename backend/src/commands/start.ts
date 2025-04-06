@@ -2,6 +2,7 @@ import { Message } from "node-telegram-bot-api";
 import getDbConnection from "../function/getDbConnection";
 import { User } from "../type";
 import bot from "../bot";
+import global from "../global";
 
 const webappurl = process.env.WEB_APP_URL!;
 const channelurl = process.env.CHANNEL_URL!;
@@ -36,8 +37,8 @@ export default async (msg: Message) => {
 
           if (usermyrefbd) {
             await getDbConnection(
-              `INSERT INTO users(telegram_id, first_name, last_name, username) VALUES (?, ?, ?, ?)`,
-              [chatid, first_name, last_name, username]
+              `INSERT INTO users(telegram_id, first_name, last_name, username, myref) VALUES (?, ?, ?, ?, ?)`,
+              [chatid, first_name, last_name, username, usermyrefbd.telegram_id]
             );
 
             const ref = usermyrefbd.ref ? JSON.parse(usermyrefbd.ref) : [];
@@ -66,7 +67,11 @@ export default async (msg: Message) => {
 
     await bot.sendMessage(
       chatid,
-      `Здраствуйте!\nДанный бот был создан для осуществление более удобной навигации в метрополитенах мира.\nТелеграмм канал проекта - <a href="${channelurl}">канал</a>.\n\nНа данный момент доступны схемы навигации в метрополитенах:`,
+      `Здраствуйте!\nДанный бот был создан для осуществление более удобной навигации в метрополитенах мира.\n\nТелеграмм канал проекта - <a href="${channelurl}">канал</a> ℹ️${
+        global.info.countuser
+          ? `\nВсего пользователей: ${global.info.countuser} (Обновляется раз в день) 📈`
+          : ""
+      }\n\nНа данный момент доступны схемы навигации в метрополитенах:`,
       {
         reply_markup: {
           inline_keyboard: [

@@ -11,5 +11,6 @@ export default {
     schema: schema;
     notifications: notifications;
     routes: Map<string, route>;
+    countuser?: number;
   };
 };

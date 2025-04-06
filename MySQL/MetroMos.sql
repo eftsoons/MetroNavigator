@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: MySQL-8.2
--- Время создания: Апр 06 2025 г., 05:19
+-- Время создания: Апр 06 2025 г., 16:33
 -- Версия сервера: 8.2.0
 -- Версия PHP: 8.1.28
 
@@ -48,6 +48,7 @@ CREATE TABLE `users` (
   `photo` text,
   `username` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `ref` json DEFAULT NULL,
+  `myref` bigint DEFAULT NULL,
   `refcount` int NOT NULL DEFAULT '0',
   `countroutes` int NOT NULL DEFAULT '0',
   `showtop` tinyint(1) NOT NULL DEFAULT '0',

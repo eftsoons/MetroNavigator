@@ -25,6 +25,12 @@ export default async () => {
     [time - 43200]
   );
 
+  const [contuser] = (await getDbConnection(
+    `SELECT COUNT(*) as countuser FROM users`
+  )) as Array<{ countuser: number }>;
+
+  global.info.countuser = contuser?.countuser;
+
   try {
     const schema = await axios.get(
       `${process.env.URL_MOS_API}/api/schema/v1.0`
