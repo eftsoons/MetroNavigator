@@ -8,7 +8,7 @@ import {
   connectinfo,
 } from "@/type";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import InfoStationAll from "./InfoStationAll";
@@ -20,6 +20,11 @@ import TimeForDate from "@/function/TimeForDate";
 import PageAnimation from "@/components/PageAnimation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Mousewheel } from "swiper/modules";
+import CopySVG from "@/svg/copy";
+import ShareSVG from "@/svg/share";
+import { shareURL } from "@telegram-apps/sdk-react";
+import Copy from "@/function/Copy";
+import { setsnackbar } from "@/redux/info";
 
 function InfoStation({
   infostation,
@@ -43,6 +48,8 @@ function InfoStation({
   const [connects, setconnects] = useState<Array<connectinfo>>([]);
   const [infostationall, setinfostationall] = useState(false);
   const [lastupdate, setlastupdate] = useState<string | null>(null);
+
+  const dispatch = useDispatch();
 
   const schema = useSelector((data: Store) => data.schema) as schema;
 
@@ -127,7 +134,7 @@ function InfoStation({
         )
         .then(handleaxios);
 
-      const idinterval = setInterval(() => {
+      const intervalid = setInterval(() => {
         axios
           .get(
             `${import.meta.env.VITE_API_URL_MOS}/api/stations/v2/${
@@ -137,28 +144,30 @@ function InfoStation({
           .then(handleaxios);
       }, 10000);
 
-      return () => clearInterval(idinterval);
+      const intervalid2 = setInterval(() => {
+        setconnects((prev) =>
+          prev.map((data) => {
+            if (data.wagon) {
+              return {
+                ...data,
+                wagon: {
+                  ...data.wagon,
+                  arrivalTime: data.wagon.arrivalTime - 1,
+                },
+              };
+            } else {
+              return data;
+            }
+          })
+        );
+      }, 1000);
+
+      return () => {
+        clearInterval(intervalid);
+        clearInterval(intervalid2);
+      };
     }
   }, [station]);
-
-  useEffect(() => {
-    const intervalid = setInterval(() => {
-      setconnects((prev) =>
-        prev.map((data) => {
-          if (data.wagon?.arrivalTime || data.wagon?.arrivalTime == 0) {
-            return {
-              ...data,
-              wagon: { ...data.wagon, arrivalTime: data.wagon.arrivalTime - 1 },
-            };
-          } else {
-            return data;
-          }
-        })
-      );
-    }, 1000);
-
-    return () => clearInterval(intervalid);
-  }, [lastupdate]);
 
   return (
     station && (
@@ -196,12 +205,56 @@ function InfoStation({
                 {station.station.name.ru}
               </h1>
             </div>
-            <div className="flex items-center gap-[15px] object-contain">
-              <img
-                className="h-[30px] w-[30px] object-contain"
-                src={station.line.icon}
-              />
-              <span>{station.line.name.ru}</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-[15px]">
+                <img
+                  className="h-[30px] w-[30px] object-contain"
+                  src={station.line.icon}
+                />
+                <span>{station.line.name.ru}</span>
+              </div>
+              <div className="flex gap-[8px]">
+                <button
+                  onClick={() => {
+                    Copy(
+                      `https://t.me/MetroNavigatorBot/mos?startapp=${btoa(
+                        encodeURIComponent(
+                          JSON.stringify({ station: station.station.id })
+                        )
+                      )}`
+                    );
+                    dispatch(
+                      setsnackbar({
+                        time: 5000,
+                        title: "Копирование",
+                        text: `Вы успешно скопировали ссылку на станцию: ${station.station.name.ru} (${station.station.id})`,
+                        icon: "copy",
+                      })
+                    );
+                  }}
+                  className="p-[8px]! bg-[var(--primary-button)] rounded-[999px]"
+                >
+                  <CopySVG />
+                </button>
+                <button
+                  className="p-[8px]! bg-[var(--primary-button)] rounded-[999px]"
+                  onClick={() =>
+                    shareURL(
+                      `Московский метрополитен\n\nСтанция: ${
+                        station.station.name.ru
+                      } (${
+                        station.station.id
+                      })\nСсылка: https://t.me/MetroNavigatorBot/mos?startapp=${btoa(
+                        encodeURIComponent(
+                          JSON.stringify({ station: station.station.id })
+                        )
+                      )}`
+                    )
+                  }
+                >
+                  <ShareSVG />
+                </button>
+              </div>
             </div>
             {station.station.workTime[day] &&
             station.station.workTime[day].open ? (

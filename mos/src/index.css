@@ -104,6 +104,27 @@ button:active:not(:disabled) {
   animation: animtext2 6s infinite linear;
 }
 
+.snackbar {
+  position: fixed;
+  animation: snackbar cubic-bezier(0, 1, 0.4, 1);
+  z-index: 99999;
+}
+
+@keyframes snackbar {
+  0% {
+    bottom: -4rem;
+    opacity: 0;
+  }
+  50% {
+    bottom: 40px;
+    opacity: 1;
+  }
+  100% {
+    bottom: -4rem;
+    opacity: 0;
+  }
+}
+
 @keyframes animtext1 {
   0% {
     transform: translate(0%);

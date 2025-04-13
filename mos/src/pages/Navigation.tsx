@@ -31,6 +31,7 @@ import {
   miniApp,
   postEvent,
   retrieveLaunchParams,
+  shareURL,
   useSignal,
 } from "@telegram-apps/sdk-react";
 import Station from "@/components/Station";
@@ -44,6 +45,7 @@ import {
   setBstation,
   setcoord,
   setsaveroutes,
+  setsnackbar,
 } from "@/redux/info";
 import { fetchUser, setuserroutesave } from "@/redux/userinfo";
 import { AppDispatch } from "@/redux";
@@ -51,6 +53,7 @@ import { getSchema } from "@/redux/schema";
 import { getNotifications } from "@/redux/notifications";
 
 import ReactDOMServer from "react-dom/server";
+import Copy from "@/function/Copy";
 
 const typefilter = [
   "BANK",
@@ -75,6 +78,8 @@ const typefilter = [
 function Navigation() {
   const raw = useSignal(initData.raw);
   const isDark = useSignal(miniApp.isDark);
+  const startParam = useSignal(initData.startParam);
+
   const launchparams = retrieveLaunchParams();
 
   const [servicesfiler, setservicesfiler] = useState(false);
@@ -352,7 +357,7 @@ function Navigation() {
                         station: station,
                       });
 
-                      const wagon = transfer?.wagons.find(
+                      const wagon = transfer.wagons.find(
                         (data) =>
                           (data.stationPrevId == routes.nodes[i + 1] &&
                             data.stationToId == routes.nodes[i - 1]) ||
@@ -482,15 +487,18 @@ function Navigation() {
   }, [typenodes]);
 
   useEffect(() => {
+    let timeout = null as null | NodeJS.Timeout;
+    let timeout2 = null as null | NodeJS.Timeout;
     if (
       nodes &&
       (selectnode || selectnode == 0) &&
       nodes[selectnode] &&
-      nodes[selectnode].svg
+      nodes[selectnode].svg &&
+      transformRef.current
     ) {
       setactivestation(nodes[selectnode].svg);
 
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         if (transformRef.current && mapactivestation.current) {
           transformRef.current.zoomToElement(
             mapactivestation.current,
@@ -498,15 +506,20 @@ function Navigation() {
             300
           );
 
-          setTimeout(() => {
+          timeout2 = setTimeout(() => {
             if (transformRef.current) {
               transformRef.current.zoomOut(0.35);
               //мб снова переделать
             }
-          }, 350);
+          }, 600);
         }
       }, 250);
     }
+
+    return () => {
+      timeout && clearTimeout(timeout);
+      timeout2 && clearTimeout(timeout2);
+    };
   }, [nodes, selectnode]);
 
   useEffect(() => {
@@ -536,7 +549,54 @@ function Navigation() {
         transformRef.current.zoomToElement(element, 6);
       }
     }
-  }, [infostation]);
+  }, [infostation, schema, schemaimg]);
+
+  useEffect(() => {
+    if (startParam && transformRef.current) {
+      const intervalid = setTimeout(() => {
+        const startParams = JSON.parse(decodeURIComponent(atob(startParam)));
+
+        if (startParams.stationA) {
+          dispatch(setAstation(startParams.stationA));
+        }
+
+        if (startParams.stationB) {
+          dispatch(setBstation(startParams.stationB));
+        }
+
+        if (startParams.station) {
+          const station = schema?.stations.find(
+            (data) => data.id == startParams.station
+          ) as station;
+
+          const line = schema?.lines.find(
+            (data) => data.id == station.lineId
+          ) as line;
+
+          const stationall = schema?.stations
+            ? schema.stations
+                .filter(
+                  (data) =>
+                    data.name.ru == station.name.ru && data.id != station.id
+                )
+                .map((station) => {
+                  const line = schema.lines.find(
+                    (data) => data.id == station.lineId
+                  ) as line;
+
+                  return { station: station, line: line };
+                })
+            : [];
+
+          setinfoselectstation(0);
+
+          setinfostation([{ station: station, line: line }, ...stationall]);
+        }
+      }, 300);
+
+      return () => clearInterval(intervalid);
+    }
+  }, [startParam, transformRef.current]);
 
   const handleclickrect = (
     e: React.MouseEvent<SVGRectElement, MouseEvent>,
@@ -794,7 +854,51 @@ function Navigation() {
             </div>
           </div>
           {!openerrorroute && Astation && Bstation && (
-            <Button onClick={() => setopennodes(true)}>Подробнее</Button>
+            <>
+              <div className="flex gap-[8px]">
+                <Button
+                  onClick={() => {
+                    Copy(
+                      `https://t.me/MetroNavigatorBot/mos?startapp=${btoa(
+                        encodeURIComponent(
+                          JSON.stringify({
+                            stationA: Astation,
+                            stationB: Bstation,
+                          })
+                        )
+                      )}`
+                    );
+                    dispatch(
+                      setsnackbar({
+                        time: 5000,
+                        title: "Копирование",
+                        text: `Вы успешно скопировали ссылку на маршрут: ${Astation}-${Bstation}`,
+                        icon: "copy",
+                      })
+                    );
+                  }}
+                >
+                  Скопировать
+                </Button>
+                <Button
+                  onClick={() =>
+                    shareURL(
+                      `Московский метрополитен\n\nМаршрут: ${Astation}-${Bstation}\nСсылка: https://t.me/MetroNavigatorBot/mos?startapp=${btoa(
+                        encodeURIComponent(
+                          JSON.stringify({
+                            stationA: Astation,
+                            stationB: Bstation,
+                          })
+                        )
+                      )}`
+                    )
+                  }
+                >
+                  Поделиться
+                </Button>
+              </div>
+              <Button onClick={() => setopennodes(true)}>Подробнее</Button>
+            </>
           )}
         </div>
       </Page>

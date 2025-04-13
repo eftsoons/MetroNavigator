@@ -17,30 +17,63 @@ const initialState: Store["schemaimg"] = {
 export const getSchemaDark = createAsyncThunk(
   "schema/getSchemaimgdark",
   async (raw: string | undefined) => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/schemadark`,
-      {
-        headers: { authorization: raw },
-        responseType: "blob",
-      }
-    );
+    const cache = await caches.open("schemaimg");
+    const schemadarkimg = await cache.match("/schemaimg/schemadarkimg");
+    const update = localStorage.getItem("update");
 
-    return URL.createObjectURL(response.data);
+    const date = Date.now();
+
+    if (!schemadarkimg || !update || date - Number(update) >= 86400000) {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/schemadark`,
+        {
+          headers: { authorization: raw },
+          responseType: "blob",
+        }
+      );
+
+      const cache = await caches.open("schemaimg");
+      const responseput = new Response(response.data, {
+        headers: { "Content-Type": "image/webp" },
+      });
+      await cache.put("/schemaimg/schemadarkimg", responseput);
+
+      return URL.createObjectURL(response.data);
+    } else {
+      return URL.createObjectURL(await schemadarkimg.blob());
+    }
   }
 );
 
 export const getSchemaLight = createAsyncThunk(
   "schema/getSchemaimglight",
   async (raw: string | undefined) => {
-    const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/schemalight`,
-      {
-        headers: { authorization: raw },
-        responseType: "blob",
-      }
-    );
+    const cache = await caches.open("schemaimg");
+    const schemalightimg = await cache.match("/schemaimg/schemalightimg");
 
-    return URL.createObjectURL(response.data);
+    const update = localStorage.getItem("update");
+
+    const date = Date.now();
+
+    if (!schemalightimg || !update || date - Number(update) >= 86400000) {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/schemalight`,
+        {
+          headers: { authorization: raw },
+          responseType: "blob",
+        }
+      );
+
+      const cache = await caches.open("schemaimg");
+      const responseput = new Response(response.data, {
+        headers: { "Content-Type": "image/webp" },
+      });
+      await cache.put("/schemaimg/schemalightimg", responseput);
+
+      return URL.createObjectURL(response.data);
+    } else {
+      return URL.createObjectURL(await schemalightimg.blob());
+    }
   }
 );
 

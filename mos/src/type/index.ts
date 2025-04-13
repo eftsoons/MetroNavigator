@@ -234,6 +234,14 @@ type Store = {
     Bstation: null | number;
     offbackfunction?: () => void;
     timeouterror: Boolean;
+    snackbar: null | {
+      title?: string;
+      text?: string;
+      icon?: "copy";
+      onClick?: () => void;
+      onExit?: () => void;
+      time: number;
+    };
   };
   schemaimg: {
     schemadark: null | string;
@@ -266,7 +274,6 @@ type node = {
   infonode: {
     station: Array<{
       station: station;
-      wagon?: wagontransitions;
     }>;
     line: Array<
       | { type: "line"; line: line; pathLength: number }
@@ -310,4 +317,5 @@ export type {
   route,
   User,
   routesave,
+  wagontransitions,
 };

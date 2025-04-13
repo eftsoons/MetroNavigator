@@ -31,19 +31,20 @@ export default async (req: Request, res: Response) => {
           infoprofile.routesave ? JSON.parse(infoprofile.routesave) : []
         ) as Array<{ start: number; end: number }>;
 
-        if (global.info.routes.has(`${Astation}-${Bstation}`)) {
-          if (
-            !routesave.some(
-              (data) => data.start == Astation && data.end == Bstation
-            )
-          ) {
-            routesave.push({ start: Astation, end: Bstation });
-          }
+        routesave.splice(0, 0, { start: Astation, end: Bstation });
 
+        const route = routesave.slice(0, 5);
+
+        await getDbConnection(
+          `UPDATE users SET countroutes = countroutes + 1, routesave = ? WHERE telegram_id = ?`,
+          [JSON.stringify(route), userinfo.id]
+        );
+
+        if (global.info.routes.has(`${Astation}-${Bstation}`)) {
           res.send({
             process: true,
             routes: global.info.routes.get(`${Astation}-${Bstation}`),
-            routesave: routesave,
+            routesave: route,
           });
         } else {
           const routes = await axios.post(
@@ -56,16 +57,6 @@ export default async (req: Request, res: Response) => {
 
           if (routes.data.data) {
             global.info.routes.set(`${Astation}-${Bstation}`, routes.data.data);
-
-            if (
-              !routesave.some(
-                (data) => data.start == Astation && data.end == Bstation
-              )
-            ) {
-              routesave.splice(0, 0, { start: Astation, end: Bstation });
-            }
-
-            const route = routesave.slice(0, 5);
 
             await getDbConnection(
               `UPDATE users SET countroutes = countroutes + 1, routesave = ? WHERE telegram_id = ?`,

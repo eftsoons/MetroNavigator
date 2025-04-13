@@ -11,6 +11,7 @@ const initialState: Store["info"] = {
   Astation: null,
   Bstation: null,
   timeouterror: false,
+  snackbar: null,
 };
 
 const savefunbackbutton = [] as Array<() => void>;
@@ -70,6 +71,14 @@ const counterSlice = createSlice({
         backButton.hide();
       }
     },
+    backfunctiondeletedall: () => {
+      savefunbackbutton.splice(0, savefunbackbutton.length);
+
+      backButton.hide();
+    },
+    setsnackbar: (state, action) => {
+      state.snackbar = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(isRejected, (state, action) => {
@@ -92,6 +101,8 @@ export const {
   setsaveroutes,
   backfunctionpush,
   backfunctiondeleted,
+  backfunctiondeletedall,
+  setsnackbar,
 } = counterSlice.actions;
 
 export default counterSlice.reducer;

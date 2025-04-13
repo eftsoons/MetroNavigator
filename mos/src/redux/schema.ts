@@ -14,11 +14,27 @@ const initialState: Store["schema"] = null;
 export const getSchema = createAsyncThunk(
   "schema/getSchema",
   async (raw: string | undefined) => {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/schema`, {
-      headers: { authorization: raw },
-    });
+    const schema = localStorage.getItem("schema");
 
-    return response.data.schema;
+    const date = Date.now();
+
+    const update = localStorage.getItem("update");
+
+    if (!schema || !update || date - Number(update) >= 86400000) {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/schema`,
+        {
+          headers: { authorization: raw },
+        }
+      );
+
+      localStorage.setItem("update", String(date));
+      localStorage.setItem("schema", JSON.stringify(response.data.schema));
+
+      return response.data.schema;
+    } else {
+      return JSON.parse(schema);
+    }
   }
 );
 

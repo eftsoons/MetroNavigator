@@ -11,6 +11,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Store } from "@/type";
 import PageErrorTimeout from "@/pages/PageErrorTimeout";
+import SnackBar from "./SnackBar";
 
 function Tabbar({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function Tabbar({ children }: { children: ReactNode }) {
   const launchparams = retrieveLaunchParams();
 
   const timeouterror = useSelector((data: Store) => data.info.timeouterror);
+  const snackbar = useSelector((data: Store) => data.info.snackbar);
 
   return (
     <>
@@ -104,6 +106,16 @@ function Tabbar({ children }: { children: ReactNode }) {
           <Support />
         </button>
       </footer>
+      {snackbar && (
+        <SnackBar
+          title={snackbar.title}
+          icon={snackbar.icon}
+          onClick={snackbar.onClick}
+          onExit={snackbar.onExit}
+          time={snackbar.time}
+          text={snackbar.text}
+        />
+      )}
     </>
   );
 }

@@ -9,7 +9,6 @@ function Support() {
         onClick={() => openTelegramLink("https://t.me/transport_mos_bot")}
       >
         Офицальный чат бот "Александр"
-        <span className="hidden">саня хуй соси</span>
       </Button>
       <Button onClick={() => openLink("https://mosmetro.ru/")}>
         Офицальный сайт
@@ -22,6 +21,12 @@ function Support() {
       </Button>
       <Button onClick={() => openTelegramLink("https://t.me/FedinLive")}>
         Канал автора mini-apps
+      </Button>
+      <Button onClick={() => openTelegramLink("https://t.me/shishkin666")}>
+        Поддержка
+      </Button>
+      <Button onClick={() => openLink("https://lk.mosmetro.ru/sign-in")}>
+        Пополнить баланс
       </Button>
     </Page>
   );

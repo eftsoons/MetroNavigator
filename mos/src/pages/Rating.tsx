@@ -19,6 +19,7 @@ import { fetchTop } from "@/redux/top";
 import { AppDispatch } from "@/redux";
 import { setswiperindex } from "@/redux/info";
 import TimeToHour from "@/function/TimeToHour";
+import PlacHolderImg from "@/components/PlaceHolderImg";
 
 function Rating() {
   const raw = useSignal(initData.raw);
@@ -123,10 +124,19 @@ function Rating() {
                       <div className="flex items-center w-full justify-between">
                         <div className="flex items-center gap-[16px] w-[60%]">
                           {data.photo ? (
-                            <img
-                              className="rounded-[999px] h-[30px] w-[30px]"
-                              src={data.photo}
-                            />
+                            <PlacHolderImg
+                              Placeholder={
+                                <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button) absolute">
+                                  {data.first_name[0]}
+                                </div>
+                              }
+                            >
+                              <img
+                                className="rounded-[999px] h-[30px] w-[30px]"
+                                src={data.photo}
+                                loading="lazy"
+                              />
+                            </PlacHolderImg>
                           ) : (
                             <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button)">
                               {data.first_name[0]}
@@ -204,10 +214,19 @@ function Rating() {
                       <div className="flex items-center w-full justify-between">
                         <div className="flex items-center gap-[16px] w-[60%]">
                           {data.photo ? (
-                            <img
-                              className="rounded-[999px] h-[30px] w-[30px]"
-                              src={data.photo}
-                            />
+                            <PlacHolderImg
+                              Placeholder={
+                                <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button) absolute">
+                                  {data.first_name[0]}
+                                </div>
+                              }
+                            >
+                              <img
+                                className="rounded-[999px] h-[30px] w-[30px]"
+                                src={data.photo}
+                                loading="lazy"
+                              />
+                            </PlacHolderImg>
                           ) : (
                             <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button)">
                               {data.first_name[0]}
@@ -285,10 +304,19 @@ function Rating() {
                       <div className="flex items-center w-full justify-between">
                         <div className="flex items-center gap-[16px] w-[60%]">
                           {data.photo ? (
-                            <img
-                              className="rounded-[999px] h-[30px] w-[30px]"
-                              src={data.photo}
-                            />
+                            <PlacHolderImg
+                              Placeholder={
+                                <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button) absolute">
+                                  {data.first_name[0]}
+                                </div>
+                              }
+                            >
+                              <img
+                                className="rounded-[999px] h-[30px] w-[30px]"
+                                src={data.photo}
+                                loading="lazy"
+                              />
+                            </PlacHolderImg>
                           ) : (
                             <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button)">
                               {data.first_name[0]}

@@ -27,6 +27,8 @@ import {
 } from "@/redux/userinfo";
 import { AppDispatch } from "@/redux";
 import TimeToHour from "@/function/TimeToHour";
+import PlacHolderImg from "@/components/PlaceHolderImg";
+import { setsnackbar } from "@/redux/info";
 
 function Profile() {
   const user = useSignal(initData.user);
@@ -84,10 +86,22 @@ function Profile() {
               <div className="h-full w-[20%] max-w-[100px] rotate-345">
                 <A4SVG />
               </div>
-              <img
-                className="w-[30%] max-w-[180px] h-full rounded-[999px]"
-                src={user.photoUrl}
-              />
+              <PlacHolderImg
+                Placeholder={
+                  <div className="min-w-[90px] min-h-[90px] rounded-[999px] absolute flex justify-center items-center bg-(--primary-button)">
+                    <span style={{ fontSize: "clamp(2rem, 50vw, 3rem)" }}>
+                      {user.firstName[0]}
+                    </span>
+                  </div>
+                }
+                className={"w-[30%] h-full flex justify-center items-center"}
+              >
+                <img
+                  className="w-full max-w-[180px] h-full rounded-[999px]"
+                  src={user.photoUrl}
+                  loading="lazy"
+                />
+              </PlacHolderImg>
               <div className="h-full w-[20%] max-w-[100px] rotate-15">
                 <Sport14SVG />
               </div>
@@ -113,11 +127,19 @@ function Profile() {
                   https://t.me/MetroNavigatorBot?start={user.id}
                 </span>
               </div>
-              <div className="flex items-center gap-[16px]">
+              <div className="flex items-center gap-[8px]">
                 <Button
-                  onClick={() =>
-                    Copy(`https://t.me/MetroNavigatorBot?start=${user.id}`)
-                  }
+                  onClick={() => {
+                    Copy(`https://t.me/MetroNavigatorBot?start=${user.id}`);
+                    dispatch(
+                      setsnackbar({
+                        time: 5000,
+                        title: "Копирование",
+                        text: `Вы успешно скопировали реферальную ссылку: https://t.me/MetroNavigatorBot?start=${user.id}`,
+                        icon: "copy",
+                      })
+                    );
+                  }}
                 >
                   Скопировать
                 </Button>
@@ -158,10 +180,19 @@ function Profile() {
                               <div className="flex items-center gap-[8px] w-full">
                                 <div className="flex items-center gap-[8px] w-full">
                                   {data.photo ? (
-                                    <img
-                                      className="rounded-[999px] h-[30px] w-[30px]"
-                                      src={data.photo}
-                                    />
+                                    <PlacHolderImg
+                                      Placeholder={
+                                        <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button) absolute">
+                                          {data.first_name[0]}
+                                        </div>
+                                      }
+                                    >
+                                      <img
+                                        className="rounded-[999px] h-[30px] w-[30px]"
+                                        src={data.photo}
+                                        loading="lazy"
+                                      />
+                                    </PlacHolderImg>
                                   ) : (
                                     <div className="rounded-[999px] h-[30px] w-[30px] flex justify-center items-center bg-(--primary-button)">
                                       {data.first_name[0]}
