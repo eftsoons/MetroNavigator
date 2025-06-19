@@ -1,0 +1,17 @@
+{
+  "TitleRoutes": "Маршруты",
+  "TitleTime": "Время",
+  "TitleRef": "Рефералы",
+  "TitleTopRoutes": "Топ по маршрутам",
+  "TitleTopTime": "Топ по времени",
+  "TitleTopRef": "Топ по рефералам",
+  "TheRoute_one": "{{count}} маршрут",
+  "TheRoute_few": "{{count}} маршрута",
+  "TheRoute_many": "{{count}} маршрутов",
+  "TheRef_one": "{{count}} реферал",
+  "TheRef_few": "{{count}} реферала",
+  "TheRef_many": "{{count}} рефералов",
+  "MyPlaceMaybe": "Ваше возможное место: {{count}}",
+  "MyPlace": "Ваше место: {{count}}",
+  "Place": "{{count}} место"
+}

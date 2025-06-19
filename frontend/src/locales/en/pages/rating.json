@@ -1,0 +1,14 @@
+{
+  "TitleRoutes": "Routes",
+  "TitleTime": "Time",
+  "TitleRef": "Invited",
+  "TitleTopRoutes": "Top by routes",
+  "TitleTopTime": "Top of the time",
+  "TitleTopRef": "Top Invited",
+  "TheRoute_one": "{{count}} route",
+  "TheRoute_other": "{{count}} routes",
+  "TheRef": "{{count}} invited",
+  "MyPlaceMaybe": "Your possible location: {{count}}",
+  "MyPlace": "Your place: {{count}}",
+  "Place": "{{count}} place"
+}

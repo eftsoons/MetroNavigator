@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+[theme="dark"] {
+  --primary-bg: #1a1a1a;
+  --primary-text: #e0e0e0;
+  --primary-color: rgba(41, 41, 41, 0.5);
+  --primary-border-color: rgba(77, 77, 77, 0.5);
+  --primary-button: rgba(102, 102, 102, 0.75);
+  --primary-muted-color: #afaeae;
+  --primary-accept: #30d158;
+  --primary-warn: rgba(239, 126, 36, 0.1);
+  --primary-border-warn: #ef7e24;
+  --primary-bus: #3264c5;
+  --primary-bus-text: #ffffff;
+}
+
+[theme="light"] {
+  --primary-bg: #ffffff;
+  --primary-text: #333333;
+  --primary-color: rgba(238, 238, 238, 0.5);
+  --primary-border-color: rgba(238, 238, 238, 0.5);
+  --primary-button: rgba(218, 218, 218, 0.5);
+  --primary-muted-color: #686868;
+  --primary-accept: #30d158;
+  --primary-warn: rgba(239, 126, 36, 0.1);
+  --primary-border-warn: #ef7e24;
+  --primary-bus: #3264c5;
+  --primary-bus-text: #ffffff;
+}
+
+* {
+  scrollbar-width: none !important;
+  padding: 0;
+  margin: 0;
+  color: var(--primary-text);
+  font-family: MoscowSans-Regular;
+  font-weight: 300;
+  user-select: none;
+  outline: none;
+}
+
+text {
+  tspan {
+    fill: var(--primary-text);
+    stroke: var(--primary-bg);
+    stroke-width: 2;
+    paint-order: stroke fill;
+    font-family: MoscowSans-Light;
+  }
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  height: 100vh;
+  overflow: hidden;
+  background: var(--primary-bg);
+}
+
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+button {
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+button:active:not(:disabled) {
+  opacity: 0.75;
+  transition: 0.25s;
+}
+
+.spinner {
+  fill: var(--primary-accept);
+  animation: spinner 2s infinite linear;
+}
+
+.animation-vagon-profile {
+  animation: animationvagon 3s infinite linear;
+}
+
+.animation-vagon-profile2 {
+  animation: animationvagon2 2s infinite linear;
+  transform: rotateY(180deg);
+  transform-origin: bottom;
+}
+
+.timer {
+  transform-origin: center;
+  animation: timeranim 2s infinite linear;
+}
+
+.animtext1 {
+  position: relative;
+  animation: animtext1 4s infinite linear;
+}
+
+.animtext2 {
+  position: relative;
+  animation: animtext2 6s infinite linear;
+}
+
+.snackbar {
+  position: fixed;
+  animation: snackbar cubic-bezier(0, 1, 0.4, 1);
+  z-index: 99999;
+}
+
+@keyframes snackbar {
+  0% {
+    bottom: -4rem;
+    opacity: 0;
+  }
+  50% {
+    bottom: 40px;
+    opacity: 1;
+  }
+  100% {
+    bottom: -4rem;
+    opacity: 0;
+  }
+}
+
+@keyframes animtext1 {
+  0% {
+    transform: translate(0%);
+  }
+  100% {
+    transform: translate(-100%);
+  }
+}
+
+@keyframes animtext2 {
+  0% {
+    transform: translate(100%);
+  }
+  100% {
+    transform: translate(-100%);
+  }
+}
+
+.react-modal-sheet-backdrop {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+@keyframes timeranim {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes animationvagon2 {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 0%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes animationvagon {
+  0% {
+    left: 100%;
+  }
+  50%,
+  80% {
+    left: 0%;
+  }
+  100% {
+    left: -100%;
+  }
+}
+
+@keyframes spinner {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@font-face {
+  font-family: "MoscowSans-Light";
+  src: url("/fonts/MoscowSans-Light.woff2");
+}
+
+@font-face {
+  font-family: "MoscowSans-Regular";
+  src: url("/fonts/MoscowSans-Regular.woff2");
+}
+
+@font-face {
+  font-family: "MoscowSans-Medium";
+  src: url("/fonts/MoscowSans-Medium.woff2");
+}
+
+@font-face {
+  font-family: "MoscowSans-Bold";
+  src: url("/fonts/MoscowSans-Bold.woff2");
+}

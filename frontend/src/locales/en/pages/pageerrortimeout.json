@@ -1,0 +1,5 @@
+{
+  "Sorry": "Sorry, but you need to reboot the mini-apps after logging into it.",
+  "Reason": "The reason for this is your exceeding the limits of your stay in mini-apps (2 hours).",
+  "Answer": "This limit was set to ensure the protection of data and the api as a whole."
+}
