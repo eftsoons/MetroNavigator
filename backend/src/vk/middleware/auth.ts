@@ -172,7 +172,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       res.status(404).send({ process: false, msg: "Error" });
     }
   } catch (error) {
-    console.log(error);
     res.status(404).send({ process: false, msg: "Error" });
   }
 };

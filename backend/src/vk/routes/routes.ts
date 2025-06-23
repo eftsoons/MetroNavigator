@@ -45,7 +45,7 @@ export default async (req: Request, res: Response) => {
 
         const routesave = {
           ...route,
-          [region]: routeregion,
+          [region]: routeregion.slice(0, 5),
         };
 
         await DbVkConncet(
@@ -91,7 +91,6 @@ export default async (req: Request, res: Response) => {
       res.status(404).send({ process: false, msg: "Error" });
     }
   } catch (error) {
-    console.log(error);
     res.status(404).send({ process: false, msg: "Error" });
   }
 };
