@@ -18,19 +18,21 @@ function Support() {
         <h1 className="text-[24px] font-medium!">{t("OfficalSourcesMetro")}</h1>
         {region == "mos" ? (
           <>
-            <Button
-              href={
-                TypePlatform == "vk"
-                  ? "https://t.me/transport_mos_bot"
-                  : undefined
-              }
-              onClick={() =>
-                TypePlatform == "tg" &&
-                openTelegramLink("https://t.me/transport_mos_bot")
-              }
-            >
-              {t("OfficalMetroChatBotMos")}
-            </Button>
+            {TypePlatform == "tg" && (
+              <Button
+                // href={
+                //   TypePlatform == "vk"
+                //     ? "https://t.me/transport_mos_bot"
+                //     : undefined
+                // }
+                onClick={() =>
+                  TypePlatform == "tg" &&
+                  openTelegramLink("https://t.me/transport_mos_bot")
+                }
+              >
+                {t("OfficalMetroChatBotMos")}
+              </Button>
+            )}
             <Button
               href={TypePlatform == "vk" ? "https://mosmetro.ru/" : undefined}
               onClick={() =>
@@ -49,27 +51,32 @@ function Support() {
             >
               {t("OfficalGroupVK")}
             </Button>
-            <Button
-              href={TypePlatform == "vk" ? "https://t.me/DtRoad" : undefined}
-              onClick={() =>
-                TypePlatform == "tg" && openTelegramLink("https://t.me/DtRoad")
-              }
-            >
-              {t("OfficalChannelTG")}
-            </Button>
-            <Button
-              href={
-                TypePlatform == "vk"
-                  ? "https://lk.mosmetro.ru/sign-in"
-                  : undefined
-              }
-              onClick={() =>
-                TypePlatform == "tg" &&
-                openLink("https://lk.mosmetro.ru/sign-in")
-              }
-            >
-              {t("ReplenishBalance")}
-            </Button>
+            {TypePlatform == "tg" && (
+              <Button
+                // href={TypePlatform == "vk" ? "https://t.me/DtRoad" : undefined}
+                onClick={() =>
+                  TypePlatform == "tg" &&
+                  openTelegramLink("https://t.me/DtRoad")
+                }
+              >
+                {t("OfficalChannelTG")}
+              </Button>
+            )}
+            {TypePlatform == "tg" && (
+              <Button
+                // href={
+                //   TypePlatform == "vk"
+                //     ? "https://lk.mosmetro.ru/sign-in"
+                //     : undefined
+                // }
+                onClick={() =>
+                  TypePlatform == "tg" &&
+                  openLink("https://lk.mosmetro.ru/sign-in")
+                }
+              >
+                {t("ReplenishBalance")}
+              </Button>
+            )}
           </>
         ) : region == "sbp" ? (
           <>
@@ -94,30 +101,34 @@ function Support() {
             >
               {t("OfficalGroupVK")}
             </Button>
-            <Button
-              href={TypePlatform == "vk" ? "https://t.me/spbmetro" : undefined}
-              onClick={() =>
-                TypePlatform == "tg" &&
-                openTelegramLink("https://t.me/spbmetro")
-              }
-            >
-              {t("OfficalChannelTG")}
-            </Button>
+            {TypePlatform == "tg" && (
+              <Button
+                // href={TypePlatform == "vk" ? "https://t.me/spbmetro" : undefined}
+                onClick={() =>
+                  TypePlatform == "tg" &&
+                  openTelegramLink("https://t.me/spbmetro")
+                }
+              >
+                {t("OfficalChannelTG")}
+              </Button>
+            )}
           </>
         ) : null}
       </div>
       <div className="flex flex-col gap-[8px]">
         <h1 className="text-[24px] font-medium!">{t("ContactDeveloper")}</h1>
         <Button
-          href={TypePlatform == "vk" ? "https://t.me/FedinLive" : undefined}
+          href={
+            TypePlatform == "vk" ? "https://vk.com/metronavigator" : undefined
+          }
           onClick={() =>
             TypePlatform == "tg" && openTelegramLink("https://t.me/FedinLive")
           }
         >
-          {t("ChannelAuthorTG")}
+          {TypePlatform == "vk" ? t("ChannelAuthorVK") : t("ChannelAuthorTG")}
         </Button>
         <Button
-          href={TypePlatform == "vk" ? "https://t.me/shishkin666" : undefined}
+          href={TypePlatform == "vk" ? "https://vk.com/shishkin666" : undefined}
           onClick={() =>
             TypePlatform == "tg" && openTelegramLink("https://t.me/shishkin666")
           }

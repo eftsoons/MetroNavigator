@@ -5,9 +5,8 @@
   "type": "module",
   "homepage": "https://telegram-mini-apps.github.io/reactjs-template",
   "scripts": {
-    "deploy": "gh-pages -d dist",
     "start": "vite",
-    "build": "tsc --noEmit && vite build",
+    "deploy": "tsc --noEmit && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview",

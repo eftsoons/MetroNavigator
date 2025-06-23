@@ -31,7 +31,6 @@ function Profile() {
   const { t } = useTranslation();
 
   const userinfo = useSelector((data: Store) => data.userinfo);
-  const user = useSelector((data: Store) => data.platform.user);
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
   const dispatch = useDispatch<AppDispatch>();
 
@@ -68,7 +67,7 @@ function Profile() {
     return () => clearInterval(idinterval);
   }, []);
 
-  return userinfo.loaded && user ? (
+  return userinfo.info ? (
     <Page className="p-[16px]! flex flex-col gap-[20px] min-h-[100%] relative">
       <div className="flex gap-[5px] relative animation-vagon-profile">
         {vagon1.map((data, index) => (
@@ -88,7 +87,7 @@ function Profile() {
                 Placeholder={
                   <div className="min-w-[90px] min-h-[90px] rounded-[999px] absolute flex justify-center items-center bg-(--primary-button)">
                     <span style={{ fontSize: "clamp(2rem, 50vw, 3rem)" }}>
-                      {user.first_name[0]}
+                      {userinfo.info.first_name[0]}
                     </span>
                   </div>
                 }
@@ -96,7 +95,7 @@ function Profile() {
               >
                 <img
                   className="w-full max-w-[180px] h-full rounded-[999px]"
-                  src={user.photo_url}
+                  src={userinfo.info.photo_url}
                   loading="lazy"
                 />
               </PlacHolderImg>
@@ -105,10 +104,10 @@ function Profile() {
               </div>
             </div>
             <span className="text-center">
-              {user.first_name} {user.last_name}
+              {userinfo.info.first_name} {userinfo.info.last_name}
             </span>
           </div>
-          {user.username && <span>@{user.username}</span>}
+          {userinfo.info.username && <span>@{userinfo.info.username}</span>}
         </div>
         <div className="bg-(--primary-color) p-[8px]! rounded-[8px] w-full flex flex-col">
           <span>
@@ -129,9 +128,11 @@ function Profile() {
                 <span>{t("RefSite")}</span>
                 <span className="select-all! break-all!">
                   {TypePlatform == "tg"
-                    ? `https://t.me/MetroNavigatorBot?start=${user.id}`
+                    ? `https://t.me/MetroNavigatorBot?start=${userinfo.info.id}`
                     : `https://vk.com/app53543259#${btoa(
-                        encodeURIComponent(JSON.stringify({ ref_id: user.id }))
+                        encodeURIComponent(
+                          JSON.stringify({ ref_id: userinfo.info.id })
+                        )
                       )}`}
                 </span>
               </div>
@@ -141,11 +142,17 @@ function Profile() {
                     let url = "";
 
                     if (TypePlatform == "tg") {
-                      url = `https://t.me/MetroNavigatorBot?start=${user.id}`;
+                      url = userinfo.info
+                        ? `https://t.me/MetroNavigatorBot?start=${userinfo.info.id}`
+                        : "";
                     } else {
-                      url = `https://vk.com/app53543259#${btoa(
-                        encodeURIComponent(JSON.stringify({ ref_id: user.id }))
-                      )}`;
+                      url = userinfo.info
+                        ? `https://vk.com/app53543259#${btoa(
+                            encodeURIComponent(
+                              JSON.stringify({ ref_id: userinfo.info.id })
+                            )
+                          )}`
+                        : "";
                     }
 
                     Copy(url);
@@ -167,15 +174,19 @@ function Profile() {
                   onClick={() => {
                     if (TypePlatform == "tg") {
                       shareURL(
-                        `https://t.me/MetroNavigatorBot?start=${user.id}`
+                        userinfo.info
+                          ? `https://t.me/MetroNavigatorBot?start=${userinfo.info.id}`
+                          : ""
                       );
                     } else if (TypePlatform == "vk") {
                       bridge.send("VKWebAppShare", {
-                        link: `https://vk.com/app53543259#${btoa(
-                          encodeURIComponent(
-                            JSON.stringify({ ref_id: user.id })
-                          )
-                        )}`,
+                        link: userinfo.info
+                          ? `https://vk.com/app53543259#${btoa(
+                              encodeURIComponent(
+                                JSON.stringify({ ref_id: userinfo.info.id })
+                              )
+                            )}`
+                          : "",
                       });
                     }
                   }}
@@ -267,7 +278,7 @@ function Profile() {
                     )}
                   </>
                 ) : (
-                  <span>{t("Null")}</span>
+                  <span>{t("NullRef")}</span>
                 )}
               </div>
             </div>

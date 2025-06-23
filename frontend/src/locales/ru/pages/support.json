@@ -1,11 +1,12 @@
 {
-  "OfficalSourcesMetro": "Офицальные источники метро",
+  "OfficalSourcesMetro": "Официальные источники метро",
   "OfficalMetroChatBotMos": "Офицальный чат бот \"Александр\"",
   "OfficalSite": "Офицальный сайт",
-  "OfficalGroupVK": "Офицальная группа в вк",
+  "OfficalGroupVK": "Официальная группа в ВКонтакте",
   "OfficalChannelTG": "Офицальный телеграмм канал",
   "ReplenishBalance": "Пополнить баланс",
   "ContactDeveloper": "Контакты разработчика",
   "ChannelAuthorTG": "Телеграмм канал автора mini-apps",
-  "Author": "Автор"
+  "Author": "Автор",
+  "ChannelAuthorVK": "Официальная группа ВКонтакте Mini-Apps"
 }

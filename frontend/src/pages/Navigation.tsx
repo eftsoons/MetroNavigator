@@ -30,14 +30,10 @@ function Navigation() {
 
   const schema = useSelector((data: Store) => data.schema);
   const notifications = useSelector((data: Store) => data.notifications);
-  const filter = useSelector(
-    (data: Store) => data.userinfo.loaded && data.userinfo.filter
-  );
+  const filter = useSelector((data: Store) => data.userinfo.filter);
   const Astation = useSelector((data: Store) => data.info.Astation);
   const Bstation = useSelector((data: Store) => data.info.Bstation);
-  const typenodes = useSelector(
-    (data: Store) => data.userinfo.loaded && data.userinfo.typenodes
-  );
+  const typenodes = useSelector((data: Store) => data.userinfo.typenodes);
   const saveroutes = useSelector((data: Store) => data.info.saveroutes);
   const nodes = useSelector((data: Store) => data.info.nodes);
   const region = useSelector((data: Store) => data.info.region);
@@ -306,6 +302,10 @@ function Navigation() {
     }
   }, [Astation, Bstation]);
 
+  const searchstation = useSelector((data: Store) => data.info.searchstation);
+
+  //переделать, закрывать всё только тогда, когда закроется основная менюшка
+
   return filter && schema && notifications ? (
     <>
       <Page className="h-full">
@@ -315,7 +315,7 @@ function Navigation() {
         <Info openerrorroute={openerrorroute} setopennodes={setopennodes} />
       </Page>
       <SettingsMap />
-      <SearchStation />
+      {searchstation && <SearchStation />}
       <InfoStation />
       <InfoNodes
         opennodes={opennodes}

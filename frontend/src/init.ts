@@ -15,7 +15,6 @@ import {
 import {
   setAppPlatform,
   setAppRaw,
-  setInfoUser,
   setisDark,
   setPlatform,
   setRef,
@@ -23,6 +22,7 @@ import {
 } from "./redux/platform";
 
 import bridge from "@vkontakte/vk-bridge";
+import { setInfoUser } from "./redux/userinfo";
 
 /**
  * Initializes the application and configures its dependencies.
@@ -81,18 +81,21 @@ export function init(store: any): void {
 
     store.dispatch(setAppRaw(location.origin + location.search));
     store.dispatch(setAppPlatform(dataURL.get("vk_platform")));
-    store.dispatch(setInfoUser({ language_code: dataURL.get("vk_language") }));
 
-    const startParam = location.hash.substring(1);
+    try {
+      const startParam = location.hash.substring(1);
 
-    if (startParam != "") {
-      const startParams = JSON.parse(decodeURIComponent(atob(startParam)));
+      if (startParam != "") {
+        const startParams = JSON.parse(decodeURIComponent(atob(startParam)));
 
-      if (startParams.ref_id) {
-        store.dispatch(setRef(startParams.ref_id));
+        if (startParams.ref_id) {
+          store.dispatch(setRef(startParams.ref_id));
+        }
+
+        store.dispatch(setstartParam(startParam));
       }
-
-      store.dispatch(setstartParam(startParam));
+    } catch {
+      store.dispatch(setstartParam({}));
     }
 
     bridge.send("VKWebAppInit");
@@ -121,10 +124,34 @@ export function init(store: any): void {
             last_name: userinfo.last_name,
             photo_url: userinfo.photo_max_orig,
             username: userinfo.domain,
-            //language_code: dataURL.get("vk_language"),
+            language_code: dataURL.get("vk_language"),
           })
         );
       });
+
+    bridge.subscribe((data) => {
+      if (data.detail.type == "VKWebAppUpdateConfig") {
+        store.dispatch(setisDark(data.detail.data.appearance == "dark"));
+      } else if (data.detail.type == "VKWebAppChangeFragment") {
+        try {
+          const startParam = data.detail.data.location;
+
+          if (startParam != "") {
+            const startParams = JSON.parse(
+              decodeURIComponent(atob(startParam))
+            );
+
+            if (startParams.ref_id) {
+              store.dispatch(setRef(startParams.ref_id));
+            }
+
+            store.dispatch(setstartParam(startParam));
+          }
+        } catch {
+          store.dispatch(setstartParam({}));
+        }
+      }
+    });
 
     // bridge.send("VKWebAppGetUserInfo").then((data) => {
     //   //пофиксить username

@@ -3,7 +3,7 @@ import { AppDispatch } from "@/redux";
 import { clearRouteSave } from "@/redux/userinfo";
 import NextSVG from "@/svg/next";
 import { station, Store, schema, line } from "@/type";
-import { memo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Mousewheel } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -16,6 +16,7 @@ import handleStation from "@/function/handlestation";
 
 const SearchStation = memo(() => {
   const [textsearch, settextsearch] = useState("");
+  const [open, setopen] = useState(true);
 
   const schema = useSelector((data: Store) => data.schema) as schema;
   const favoritessave = useSelector(
@@ -88,8 +89,11 @@ const SearchStation = memo(() => {
   const dispatch = useDispatch<AppDispatch>();
 
   const handlebackfunction = () => {
-    settextsearch("");
-    dispatch(setsearchstation(null));
+    setopen(false);
+
+    setTimeout(() => {
+      dispatch(setsearchstation(null));
+    }, 500);
   };
 
   const handlestation = (stationId: number | null) => {
@@ -100,12 +104,31 @@ const SearchStation = memo(() => {
     }
   };
 
+  const stationsearch = useMemo(
+    () =>
+      station.filter(
+        (data) =>
+          (data.name.ru
+            .toLocaleLowerCase()
+            .includes(textsearch.toLocaleLowerCase()) ||
+            data.name.en
+              .toLocaleLowerCase()
+              .includes(textsearch.toLocaleLowerCase())) &&
+          data.id != astationid &&
+          data.id != bstationid
+      ),
+    [astationid, bstationid, textsearch, station]
+  );
+
   return (
     <PageAnimation
-      open={Boolean(searchstation)}
+      open={open}
       back={true}
       backfunction={() => {
-        dispatch(setsearchstation(null));
+        setopen(false);
+        setTimeout(() => {
+          dispatch(setsearchstation(null));
+        }, 500);
       }}
       backbuttondisabled={true}
       headeractive={TypePlatform == "vk"}
@@ -257,7 +280,7 @@ const SearchStation = memo(() => {
             </div>
           )}
         <div
-          className="flex flex-col gap-[10px]"
+          className="flex flex-col gap-[10px] h-full"
           style={{
             paddingBottom: ["macos", "ios", "mobile_iphone "].includes(
               AppPlatform
@@ -266,19 +289,8 @@ const SearchStation = memo(() => {
               : "16px",
           }}
         >
-          {station
-            .filter(
-              (data) =>
-                (data.name.ru
-                  .toLocaleLowerCase()
-                  .includes(textsearch.toLocaleLowerCase()) ||
-                  data.name.en
-                    .toLocaleLowerCase()
-                    .includes(textsearch.toLocaleLowerCase())) &&
-                data.id != astationid &&
-                data.id != bstationid
-            )
-            .map((station) => {
+          {stationsearch.length > 0 ? (
+            stationsearch.map((station) => {
               const line = lines.find((line) => line.id == station.lineId);
 
               return (
@@ -304,7 +316,14 @@ const SearchStation = memo(() => {
                   </div>
                 </div>
               );
-            })}
+            })
+          ) : (
+            <div className="flex justify-center items-center h-full flex-col">
+              <span className="text-[var(--primary-muted-color)]!">
+                Станции по вашему запросу не найдены
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </PageAnimation>

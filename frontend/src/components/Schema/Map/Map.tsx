@@ -55,9 +55,7 @@ const Map = memo(() => {
   const schemaimg = useSelector((data: Store) => data.schemaimg.img);
   const notifications = useSelector((data: Store) => data.notifications);
   const coordmap = useSelector((data: Store) => data.info.coordmap);
-  const filter = useSelector(
-    (data: Store) => data.userinfo.loaded && data.userinfo.filter
-  );
+  const filter = useSelector((data: Store) => data.userinfo.filter);
   const nodes = useSelector((data: Store) => data.info.nodes);
   const infostation = useSelector((data: Store) => data.info.infostation);
   const selectinfostation = useSelector(

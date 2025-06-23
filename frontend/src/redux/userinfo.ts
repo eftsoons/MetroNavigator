@@ -4,7 +4,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState: Store["userinfo"] = {
-  loaded: false,
   showtop: false,
   filter: {
     BANK: false,
@@ -29,6 +28,10 @@ const initialState: Store["userinfo"] = {
   time: 0,
   favoritessave: [],
   routesave: [],
+  ref: [],
+  countroutes: 0,
+  refcount: 0,
+  info: null,
 };
 
 export const fetchUser = createAsyncThunk(
@@ -209,53 +212,57 @@ const counterSlice = createSlice({
     setuserroutesave: (state, action) => {
       state.routesave = action.payload;
     },
+    setInfoUser: (state, action) => {
+      state.info = { ...state.info, ...action.payload };
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUser.fulfilled, (_, action) => {
-      return { ...action.payload, loaded: true };
+    builder.addCase(fetchUser.fulfilled, (state, action) => {
+      return { ...action.payload, info: state.info };
     });
-    builder.addCase(fetchUser.rejected, () => {
-      return initialState;
+    builder.addCase(fetchUser.rejected, (state) => {
+      return { ...initialState, info: state.info };
     });
     builder.addCase(setFilter.fulfilled, (state, action) => {
       state.filter = action.payload;
     });
-    builder.addCase(setFilter.rejected, () => {
-      return initialState;
+    builder.addCase(setFilter.rejected, (state) => {
+      return { ...state, filter: initialState.filter };
     });
     builder.addCase(setTypeNodes.fulfilled, (state, action) => {
       state.typenodes = action.payload;
     });
-    builder.addCase(setTypeNodes.rejected, () => {
-      return initialState;
+    builder.addCase(setTypeNodes.rejected, (state) => {
+      return { ...state, typenodes: initialState.typenodes };
     });
     builder.addCase(setUserShowTop.fulfilled, (state, action) => {
       state.showtop = action.payload;
     });
-    builder.addCase(setUserShowTop.rejected, () => {
-      return initialState;
+    builder.addCase(setUserShowTop.rejected, (state) => {
+      return { ...state, showtop: initialState.showtop };
     });
     builder.addCase(Uptime.fulfilled, (state, action) => {
       state.time = action.payload;
     });
-    builder.addCase(Uptime.rejected, () => {
-      return initialState;
+    builder.addCase(Uptime.rejected, (state) => {
+      return { ...state, time: initialState.time };
     });
     builder.addCase(setFavoritesSave.fulfilled, (state, action) => {
       state.favoritessave = action.payload;
     });
-    builder.addCase(setFavoritesSave.rejected, () => {
-      return initialState;
+    builder.addCase(setFavoritesSave.rejected, (state) => {
+      return { ...state, favoritessave: initialState.favoritessave };
     });
     builder.addCase(clearRouteSave.fulfilled, (state, action) => {
       state.routesave = action.payload;
     });
-    builder.addCase(clearRouteSave.rejected, () => {
-      return initialState;
+    builder.addCase(clearRouteSave.rejected, (state) => {
+      return { ...state, routesave: initialState.routesave };
     });
   },
 });
 
-export const { setuserinfotimeadd, setuserroutesave } = counterSlice.actions;
+export const { setuserinfotimeadd, setuserroutesave, setInfoUser } =
+  counterSlice.actions;
 
 export default counterSlice.reducer;

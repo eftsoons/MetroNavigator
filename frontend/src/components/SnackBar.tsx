@@ -45,7 +45,11 @@ function SnackBar({
       <div className="flex gap-[8px] items-center justify-between">
         <div className="flex flex-col">
           {title && <span className="select-text!">{title}</span>}
-          {text && <span className="text-[12px] select-text!">{text}</span>}
+          {text && (
+            <span className="text-[12px] select-text! wrap-anywhere">
+              {text}
+            </span>
+          )}
         </div>
         {icon && (
           <div className="h-full flex justify-center items-center fill-(--primary-bg)!">

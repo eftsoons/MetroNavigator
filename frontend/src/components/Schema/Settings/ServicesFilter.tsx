@@ -11,9 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 function ServicesFilter({ backfunction }: { backfunction: () => void }) {
   const { t } = useTranslation();
 
-  const servicesfilter = useSelector(
-    (data: Store) => data.userinfo.loaded && data.userinfo.filter
-  );
+  const servicesfilter = useSelector((data: Store) => data.userinfo.filter);
   const dispatch = useDispatch<AppDispatch>();
 
   const [checkbox, setcheckbox] = useState(servicesfilter);
@@ -43,7 +41,7 @@ function ServicesFilter({ backfunction }: { backfunction: () => void }) {
                   className="w-full flex justify-between cursor-pointer items-center"
                 >
                   <div className="flex items-center gap-[8px] w-[85%]">
-                    <div className="w-[40px] h-[40px] bg-[var(--primary-color)] p-[2px]! rounded-[8px]">
+                    <div className="w-[40px] h-[40px] bg-[var(--primary-color)] p-[2px]! rounded-[8px] grid items-center">
                       {info.svg}
                     </div>
                     <p>{t(info.text)}</p>

@@ -5,7 +5,7 @@ import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 import Tabbar from "@/components/Tabbar";
 
 import { routes } from "@/navigation/routes.tsx";
-import { useEffect /*useLayoutEffect*/ } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
@@ -34,7 +34,7 @@ export function App() {
   const AppPlatform = useSelector((data: Store) => data.platform.AppPlatform);
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
   const region = useSelector((data: Store) => data.info.region);
-  const user = useSelector((data: Store) => data.platform.user);
+  const user = useSelector((data: Store) => data.userinfo.info);
   const isDark = useSelector((data: Store) => data.platform.isDark);
   const startParam = useSelector((data: Store) => data.platform.startParam);
 
@@ -123,8 +123,8 @@ export function App() {
     } //могут быть косяки с пустой схемой
   }, [startParam, schema]);
 
-  /*useLayoutEffect(() => {
-    if (TypePlatform == "vk") {
+  useLayoutEffect(() => {
+    /*if (TypePlatform == "vk") {
       bridge.send("VKWebAppCheckBannerAd").then((data) => {
         if (!data.result) {
           bridge
@@ -136,8 +136,8 @@ export function App() {
             });
         }
       });
-    }
-  });*/
+    }*/
+  });
 
   return (
     <AppRoot

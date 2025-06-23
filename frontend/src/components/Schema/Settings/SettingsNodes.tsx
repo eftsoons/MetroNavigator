@@ -1,21 +1,17 @@
 import { AppDispatch } from "@/redux";
 import { setTypeNodes } from "@/redux/userinfo";
 import { Store } from "@/type";
-import { initData, useSignal } from "@telegram-apps/sdk-react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 
 function SettignsNodes() {
   const { t } = useTranslation();
 
-  const typenodes = useSelector(
-    (data: Store) => data.userinfo.loaded && data.userinfo.typenodes
-  );
+  const typenodes = useSelector((data: Store) => data.userinfo.typenodes);
   const dispatch = useDispatch<AppDispatch>();
-  const raw = useSignal(initData.raw);
 
   const handlebuttonradio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    raw && dispatch(setTypeNodes({ typenodes: Number(e.target.value) }));
+    dispatch(setTypeNodes({ typenodes: Number(e.target.value) }));
   };
 
   return (

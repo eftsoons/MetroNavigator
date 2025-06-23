@@ -95,8 +95,6 @@ const Position = memo(() => {
     } else if (TypePlatform == "vk") {
       bridge.send("VKWebAppGetGeodata").then((data) => {
         if (data.available) {
-          // Местоположение получено
-
           const lat = data.lat;
           const lon = data.long;
 

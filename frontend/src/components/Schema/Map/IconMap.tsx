@@ -8,8 +8,6 @@ import { Store } from "@/type";
 import { memo, MutableRefObject, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import i18next from "i18next";
-import { AllLang } from "@/locales/i18n";
 import ReplactTextTspan from "@/function/ReplaceTextTspan";
 
 const IconMap = memo(
@@ -29,34 +27,36 @@ const IconMap = memo(
     const dispatch = useDispatch();
 
     const schema = useSelector((data: Store) => data.schema);
+    const user = useSelector((data: Store) => data.userinfo.info);
 
     const height = schema?.height;
     const width = schema?.width;
 
-    const { tapzone, textSVG } = useMemo(() => {
-      return {
-        tapzone: schema?.stations.map((data, index) => (
-          <rect
-            onClick={(e) => {
-              savecoord.current.active && handleclickrect(e, data.id);
-              dispatch(setopenmenucity(false));
-            }}
-            key={index}
-            width={data.tapSvg.w}
-            height={data.tapSvg.h}
-            x={data.tapSvg.x}
-            y={data.tapSvg.y}
-            style={{ pointerEvents: "all" }}
-          />
-        )),
-        textSVG: schema?.stations.map((data) =>
-          ReplactTextTspan(
-            data.textSvg.svg,
-            data.name[i18next.language as AllLang]
-          )
-        ),
-      };
+    const tapzone = useMemo(() => {
+      return schema?.stations.map((data, index) => (
+        <rect
+          onClick={(e) => {
+            savecoord.current.active && handleclickrect(e, data.id);
+            dispatch(setopenmenucity(false));
+          }}
+          key={index}
+          width={data.tapSvg.w}
+          height={data.tapSvg.h}
+          x={data.tapSvg.x}
+          y={data.tapSvg.y}
+          style={{ pointerEvents: "all" }}
+        />
+      ));
     }, [schema?.stations]);
+
+    const textSVG = useMemo(() => {
+      return schema?.stations.map((data) =>
+        ReplactTextTspan(
+          data.textSvg.svg,
+          data.name[user?.language_code == "ru" ? "ru" : "en"]
+        )
+      );
+    }, [schema?.stations, user?.language_code]);
 
     const handleclickrect = (
       e: React.MouseEvent<SVGRectElement, MouseEvent>,

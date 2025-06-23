@@ -43,7 +43,7 @@ const InfoNodes = memo(
     const dispatch = useDispatch();
 
     const Astation = useSelector((data: Store) => data.info.Astation);
-    const Bstation = useSelector((data: Store) => data.info.Astation);
+    const Bstation = useSelector((data: Store) => data.info.Bstation);
     const nodes = useSelector((data: Store) => data.info.nodes);
     const selectnode = useSelector((data: Store) => data.info.selectnode);
     const infostation = useSelector((data: Store) => data.info.infostation);

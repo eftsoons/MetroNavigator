@@ -49,6 +49,11 @@ export function Page({
       detent={contentheight ? "content-height" : "full-height"}
       tweenConfig={{ ease: "easeInOut", duration: 0.3 }}
       ref={ref}
+      onCloseEnd={() => {
+        // backfunction && backfunction();
+        // console.log(123);
+        //поменять
+      }}
     >
       <Sheet.Container
         style={{
@@ -88,7 +93,7 @@ export function Page({
               onClick={() => {
                 backfunction && backfunction();
               }}
-              className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] absolute right-[1rem] top-[1.5rem]"
+              className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] absolute right-[1rem] top-[1.5rem] z-2"
             >
               <CloseSVG />
             </button>

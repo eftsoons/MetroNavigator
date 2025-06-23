@@ -7,7 +7,6 @@ const initialState: Store["platform"] = {
   TypePlatform: null,
   AppPlatform: "",
   raw: null,
-  user: null,
   startParam: null,
   isDark: false,
   ref: null,
@@ -27,9 +26,6 @@ const counterSlice = createSlice({
     },
     setAppRaw: (state, action) => {
       state.raw = action.payload;
-    },
-    setInfoUser: (state, action) => {
-      state.user = { ...state.user, ...action.payload };
     },
     setstartParam: (state, action) => {
       state.startParam = action.payload;
@@ -93,7 +89,6 @@ export const {
   setAppPlatform,
   setPlatform,
   setAppRaw,
-  setInfoUser,
   setstartParam,
   setisDark,
   backfunctionpush,

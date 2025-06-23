@@ -33,7 +33,7 @@ const SettingsMap = memo(() => {
         open={servicesfiler}
         back={true}
         backfunction={() => setservicesfiler(false)}
-        className="w-full h-full flex flex-col gap-[12px] z-1"
+        className="w-full h-full flex flex-col gap-[12px] z-2"
         backbuttondisabled={TypePlatform != "vk"}
       >
         <ServicesFilter backfunction={() => setservicesfiler(false)} />
@@ -41,7 +41,7 @@ const SettingsMap = memo(() => {
       <PageAnimation
         open={settingsnodes}
         back={true}
-        className="w-full h-full flex flex-col gap-[16px] z-1"
+        className="w-full h-full flex flex-col gap-[16px] z-2"
         backfunction={() => setsettingsnodes(false)}
         backbuttondisabled={TypePlatform != "vk"}
       >

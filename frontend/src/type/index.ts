@@ -176,20 +176,22 @@ type myUser = {
     photo: string | null;
     username: string | null;
   }>;
-  telegram_id: BigInt;
   countroutes: number;
-  first_name: string;
-  last_name: string;
-  username: string;
-  photo: string;
   showtop: boolean;
   refcount: number;
   time: number;
   filter: filterstation;
   typenodes: number;
-  loaded: true;
   favoritessave: Array<number>;
   routesave: Array<{ start: number; end: number }>;
+  info: {
+    first_name: string;
+    id: number;
+    last_name?: string;
+    language_code?: string;
+    photo_url?: string;
+    username?: string;
+  } | null;
 };
 
 type User = {
@@ -215,17 +217,7 @@ type routesave = Array<{ start: number; end: number }>;
 type Store = {
   schema: schema | null;
   notifications: notifications | null;
-  userinfo:
-    | {
-        loaded: false;
-        showtop: boolean;
-        filter: filterstation;
-        typenodes: number;
-        time: number;
-        favoritessave: Array<number>;
-        routesave: routesave;
-      }
-    | myUser;
+  userinfo: myUser;
   top: null | top;
   info: {
     coordmap: coordmap;
@@ -257,14 +249,6 @@ type Store = {
     AppPlatform: string;
     raw: string | null;
     isDark: boolean;
-    user: {
-      first_name: string;
-      id: number;
-      last_name?: string;
-      language_code?: string;
-      photo_url?: string;
-      username?: string;
-    } | null;
     startParam: string | null;
     offbackfunction?: () => void;
     ref: number | null;
