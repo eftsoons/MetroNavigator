@@ -16,12 +16,6 @@ function SettignsNodes() {
 
   return (
     <>
-      <div>
-        <h1 className="text-[20px]">{t("SettingsRoutes")}</h1>
-        <p className="text-[15px] text-[var(--primary-muted-color)]!">
-          {t("PriorityRoute")}
-        </p>
-      </div>
       <div className="flex flex-col w-full gap-[16px]">
         <label className="flex justify-between cursor-pointer">
           <span>{t("PriorityTimeAndTransfer")}</span>

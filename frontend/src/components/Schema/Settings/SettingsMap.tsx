@@ -6,12 +6,15 @@ import SettignsNodes from "./SettingsNodes";
 import { useState, memo } from "react";
 import { Store } from "@/type";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const SettingsMap = memo(() => {
   const [servicesfiler, setservicesfiler] = useState(false);
   const [settingsnodes, setsettingsnodes] = useState(false);
 
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
+
+  const { t } = useTranslation();
 
   return (
     <>
@@ -33,17 +36,22 @@ const SettingsMap = memo(() => {
         open={servicesfiler}
         back={true}
         backfunction={() => setservicesfiler(false)}
-        className="w-full h-full flex flex-col gap-[12px] z-2"
+        className="w-full h-full flex flex-col gap-[12px] z-3"
         backbuttondisabled={TypePlatform != "vk"}
+        classNameSheet="z-10000!"
+        headertitle={t("Filter")}
       >
         <ServicesFilter backfunction={() => setservicesfiler(false)} />
       </PageAnimation>
       <PageAnimation
         open={settingsnodes}
         back={true}
-        className="w-full h-full flex flex-col gap-[16px] z-2"
+        className="w-full h-full flex flex-col gap-[16px] z-3"
         backfunction={() => setsettingsnodes(false)}
         backbuttondisabled={TypePlatform != "vk"}
+        classNameSheet="z-10000!"
+        headertitle={t("SettingsRoutes")}
+        headerdescription={t("PriorityRoute")}
       >
         <SettignsNodes />
       </PageAnimation>

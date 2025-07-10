@@ -5,18 +5,17 @@ import { Navigate, Route, Routes, HashRouter } from "react-router-dom";
 import Tabbar from "@/components/Tabbar";
 
 import { routes } from "@/navigation/routes.tsx";
-import { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
 
-import { Uptime } from "./redux/userinfo";
+import { fetchUser, Uptime } from "./redux/userinfo";
 import { AppDispatch } from "./redux";
 import {
   setAstation,
   setBstation,
   setinfoselectstation,
   setinfostation,
-  setRegion,
 } from "./redux/info";
 import { Store } from "./type";
 import { useTranslation } from "react-i18next";
@@ -39,6 +38,8 @@ export function App() {
   const startParam = useSelector((data: Store) => data.platform.startParam);
 
   useEffect(() => {
+    dispatch(fetchUser());
+
     if (TypePlatform == "tg") {
       miniApp.ready();
 
@@ -49,11 +50,11 @@ export function App() {
       //const startParams = JSON.parse(decodeURIComponent(atob(startParam)));
     }
 
-    if (window.location.href == "http://localhost:5173/sbp") {
-      dispatch(setRegion("sbp"));
-    } else {
-      dispatch(setRegion("mos"));
-    }
+    // if (window.location.href == "http://localhost:5173/sbp") {
+    //   dispatch(setRegion("sbp"));
+    // } else {
+    //   dispatch(setRegion("mos"));
+    // }
   }, []);
 
   useEffect(() => {
@@ -123,8 +124,8 @@ export function App() {
     } //могут быть косяки с пустой схемой
   }, [startParam, schema]);
 
-  useLayoutEffect(() => {
-    /*if (TypePlatform == "vk") {
+  /*useLayoutEffect(() => {
+    if (TypePlatform == "vk") {
       bridge.send("VKWebAppCheckBannerAd").then((data) => {
         if (!data.result) {
           bridge
@@ -136,8 +137,8 @@ export function App() {
             });
         }
       });
-    }*/
-  });
+    }
+  });*/
 
   return (
     <AppRoot

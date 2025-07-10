@@ -23,5 +23,6 @@
   "Reset": "Reset",
   "Apply": "Apply",
   "min": "min",
-  "AfterNot": "Via: unknown"
+  "AfterNot": "Via: unknown",
+  "FailedToSave": "The data was not saved"
 }

@@ -15,11 +15,7 @@ import Copy from "@/function/Copy";
 import { useDispatch, useSelector } from "react-redux";
 import { Store } from "@/type";
 
-import {
-  fetchUser,
-  setuserinfotimeadd,
-  setUserShowTop,
-} from "@/redux/userinfo";
+import { setuserinfotimeadd, setUserShowTop } from "@/redux/userinfo";
 import { AppDispatch } from "@/redux";
 import TimeToHour from "@/function/TimeToHour";
 import PlacHolderImg from "@/components/PlaceHolderImg";
@@ -39,8 +35,6 @@ function Profile() {
   const [limitref, setlimitref] = useState(5);
 
   useEffect(() => {
-    dispatch(fetchUser());
-
     setvagon1(RandomVagon());
 
     setvagon2(RandomVagon());

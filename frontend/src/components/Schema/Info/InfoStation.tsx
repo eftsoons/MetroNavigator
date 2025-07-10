@@ -35,6 +35,8 @@ import i18next from "i18next";
 import { AllLang } from "@/locales/i18n";
 import handleStation from "@/function/handlestation";
 import bridge from "@vkontakte/vk-bridge";
+import TimeSeconds from "@/function/TimeSeconds";
+import CloseSVG from "@/svg/close";
 
 const InfoStation = memo(() => {
   const { t } = useTranslation();
@@ -217,10 +219,22 @@ const InfoStation = memo(() => {
             </div>
           )}
           <div className="flex flex-col gap-[6px]">
-            <div className="flex items-center justify-between w-[90%]">
-              <h1 className="text-[28px] font-medium!">
-                {station.station.name[i18next.language as AllLang]}
-              </h1>
+            <div className="w-full flex justify-between items-center gap-[16px]">
+              <div className="w-full truncate">
+                <h1 className="text-[28px] font-medium! truncate">
+                  {station.station.name[i18next.language as AllLang]}
+                </h1>
+              </div>
+              {TypePlatform == "vk" && (
+                <button
+                  onClick={() => {
+                    backfunction && backfunction();
+                  }}
+                  className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px]"
+                >
+                  <CloseSVG />
+                </button>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-[15px]">
@@ -314,7 +328,15 @@ const InfoStation = memo(() => {
               </div>
             </div>
             {station.station.workTime[day] &&
-            station.station.workTime[day].open ? (
+            station.station.workTime[day].open &&
+            station.station.workTime[day].close &&
+            lastupdate &&
+            TimeSeconds(lastupdate) >=
+              TimeSeconds(station.station.workTime[day].open) &&
+            (TimeSeconds(lastupdate) >=
+              TimeSeconds(station.station.workTime[day].close) ||
+              TimeSeconds(station.station.workTime[day].open) >=
+                TimeSeconds(station.station.workTime[day].close)) ? (
               <span className="text-[var(--primary-muted-color)]!">
                 {t("OpenHours", {
                   from: station.station.workTime[day].open,
@@ -454,6 +476,11 @@ const InfoStation = memo(() => {
             }}
             back={true}
             backbuttondisabled={TypePlatform != "vk"}
+            headertitle={
+              <h1 className="text-[28px] font-medium!">
+                {station.station.name[i18next.language as AllLang]}
+              </h1>
+            }
           >
             <InfoStationAll
               station={station}

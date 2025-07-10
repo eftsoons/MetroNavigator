@@ -23,6 +23,7 @@ import {
 
 import bridge from "@vkontakte/vk-bridge";
 import { setInfoUser } from "./redux/userinfo";
+import { setRegion } from "./redux/info";
 
 /**
  * Initializes the application and configures its dependencies.
@@ -72,6 +73,7 @@ export function init(store: any): void {
     store.dispatch(setInfoUser(InfoUser));
     store.dispatch(setstartParam(startParam));
     store.dispatch(setisDark(isDark));
+    store.dispatch(setRegion("mos"));
 
     console.log("It's tg");
   } else if (bridge.isEmbedded() && vkid) {
@@ -81,6 +83,7 @@ export function init(store: any): void {
 
     store.dispatch(setAppRaw(location.origin + location.search));
     store.dispatch(setAppPlatform(dataURL.get("vk_platform")));
+    store.dispatch(setRegion("mos"));
 
     try {
       const startParam = location.hash.substring(1);

@@ -3,20 +3,25 @@ import { AppDispatch } from "@/redux";
 import { clearRouteSave } from "@/redux/userinfo";
 import NextSVG from "@/svg/next";
 import { station, Store, schema, line } from "@/type";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Mousewheel } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Swiper, SwiperRef, SwiperSlide } from "swiper/react";
 
 import i18next, { t } from "i18next";
 import { AllLang } from "@/locales/i18n";
 import PageAnimation from "@/components/PageAnimation";
 import { setAstation, setBstation, setsearchstation } from "@/redux/info";
 import handleStation from "@/function/handlestation";
+import Next2SVG from "@/svg/next2";
+import BackSVG from "@/svg/back";
 
 const SearchStation = memo(() => {
   const [textsearch, settextsearch] = useState("");
   const [open, setopen] = useState(true);
+  const [activeSlide, setactiveSlide] = useState(0);
+
+  const swiperRef = useRef<SwiperRef | null>(null);
 
   const schema = useSelector((data: Store) => data.schema) as schema;
   const favoritessave = useSelector(
@@ -66,9 +71,7 @@ const SearchStation = memo(() => {
   const searchstation = useSelector((data: Store) => data.info.searchstation);
   const astationid = useSelector((data: Store) => data.info.Astation);
   const bstationid = useSelector((data: Store) => data.info.Bstation);
-
   const AppPlatform = useSelector((data: Store) => data.platform.AppPlatform);
-
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
 
   const station = JSON.parse(JSON.stringify(schema.stations)).sort(
@@ -130,11 +133,10 @@ const SearchStation = memo(() => {
           dispatch(setsearchstation(null));
         }, 500);
       }}
-      backbuttondisabled={true}
+      backbuttondisabled={!(TypePlatform == "vk")}
       headeractive={TypePlatform == "vk"}
       className="w-full h-full flex flex-col gap-[12px] z-1"
-    >
-      <div className="h-full flex flex-col gap-[20px]">
+      header={
         <div className="flex gap-[15px] items-center">
           <input
             id="searchstation"
@@ -142,14 +144,11 @@ const SearchStation = memo(() => {
             placeholder={t("SearchStation")}
             onChange={(e) => settextsearch(e.target.value)}
           />
-          {/*<button
-          onClick={backfunction}
-          className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px]"
-        >
-          <CloseSVG />
-        </button>*/}
         </div>
-        {textsearch.toLocaleLowerCase() == "" &&
+      }
+    >
+      <div className="h-full flex flex-col gap-[20px]">
+        {textsearch == "" &&
           (favoritessave.length > 0 || routesave.length > 0) && (
             <div className="flex flex-col gap-[8px]">
               {routesave.length > 0 && (
@@ -165,71 +164,91 @@ const SearchStation = memo(() => {
                       {t("Clear")}
                     </Button>
                   </div>
-                  <Swiper
-                    slidesPerView={"auto"}
-                    spaceBetween={8}
-                    modules={[Mousewheel]}
-                    mousewheel={{
-                      enabled: true,
-                    }}
-                    className="w-full bg-(--primary-color) rounded-[10px] p-[8px]!"
-                  >
-                    {routesave.map((data, index) => {
-                      const {
-                        infostationstart,
-                        infolinestart,
-                        infostationend,
-                        infolineend,
-                        start,
-                        end,
-                      } = data;
+                  <div className="w-full flex bg-(--primary-color) rounded-[10px] p-[8px]! items-center gap-[10px]">
+                    <button
+                      disabled={activeSlide == 0}
+                      className="cursor-poniter w-[14px] h-[24px] fill-(--primary-text) grid items-center"
+                      onClick={() => swiperRef.current?.swiper.slidePrev()}
+                    >
+                      <BackSVG />
+                    </button>
+                    <Swiper
+                      slidesPerView={"auto"}
+                      spaceBetween={8}
+                      modules={[Mousewheel]}
+                      mousewheel={{
+                        enabled: true,
+                      }}
+                      className="w-full h-full"
+                      ref={swiperRef}
+                      onSlideChange={(swiper) =>
+                        setactiveSlide(swiper.activeIndex)
+                      }
+                    >
+                      {routesave.map((data, index) => {
+                        const {
+                          infostationstart,
+                          infolinestart,
+                          infostationend,
+                          infolineend,
+                          start,
+                          end,
+                        } = data;
 
-                      return (
-                        <SwiperSlide
-                          key={index}
-                          onClick={() => {
-                            handleStation("A")(start, dispatch);
-                            handleStation("B")(end, dispatch);
-                            handlebackfunction();
-                          }}
-                        >
-                          <div className="flex justify-around items-center border-solid border-[2px] border-(--primary-border-color) rounded-[10px] p-[8px]! cursor-pointer h-full">
-                            <div className="flex flex-col gap-[8px] justify-center items-center w-full">
-                              <img
-                                className="w-[25px] h-[25px] object-contain"
-                                src={infolinestart.icon}
-                              />
-                              <span className="text-center text-[14px]">
-                                {
-                                  infostationstart.name[
-                                    i18next.language as AllLang
-                                  ]
-                                }
-                              </span>
-                            </div>
-                            <div className="flex justify-center items-center">
-                              <div className="h-[50px] w-[50px] rotate-90">
-                                <NextSVG />
+                        return (
+                          <SwiperSlide
+                            key={index}
+                            onClick={() => {
+                              handleStation("A")(start, dispatch);
+                              handleStation("B")(end, dispatch);
+                              handlebackfunction();
+                            }}
+                          >
+                            <div className="flex justify-around items-center border-solid border-[2px] border-(--primary-border-color) rounded-[10px] p-[8px]! cursor-pointer h-full">
+                              <div className="flex flex-col gap-[8px] justify-center items-center w-full">
+                                <img
+                                  className="w-[25px] h-[25px] object-contain"
+                                  src={infolinestart.icon}
+                                />
+                                <span className="text-center text-[14px]">
+                                  {
+                                    infostationstart.name[
+                                      i18next.language as AllLang
+                                    ]
+                                  }
+                                </span>
+                              </div>
+                              <div className="flex justify-center items-center">
+                                <div className="h-[50px] w-[50px] rotate-90">
+                                  <NextSVG />
+                                </div>
+                              </div>
+                              <div className="flex flex-col gap-[8px] justify-center items-center w-full">
+                                <img
+                                  className="w-[25px] h-[25px] object-contain"
+                                  src={infolineend.icon}
+                                />
+                                <span className="text-center text-[14px]">
+                                  {
+                                    infostationend.name[
+                                      i18next.language as AllLang
+                                    ]
+                                  }
+                                </span>
                               </div>
                             </div>
-                            <div className="flex flex-col gap-[8px] justify-center items-center w-full">
-                              <img
-                                className="w-[25px] h-[25px] object-contain"
-                                src={infolineend.icon}
-                              />
-                              <span className="text-center text-[14px]">
-                                {
-                                  infostationend.name[
-                                    i18next.language as AllLang
-                                  ]
-                                }
-                              </span>
-                            </div>
-                          </div>
-                        </SwiperSlide>
-                      );
-                    })}
-                  </Swiper>
+                          </SwiperSlide>
+                        );
+                      })}
+                    </Swiper>
+                    <button
+                      disabled={activeSlide == routesave.length - 1}
+                      className="cursor-poniter w-[14px] h-[24px] fill-(--primary-text) grid items-center"
+                      onClick={() => swiperRef.current?.swiper.slideNext()}
+                    >
+                      <Next2SVG />
+                    </button>
+                  </div>
                 </div>
               )}
               {favoritessave.length > 0 && (
@@ -267,7 +286,7 @@ const SearchStation = memo(() => {
                               className="w-[20px] h-[20px] object-contain"
                               src={infoline.icon}
                             />
-                            <span className="text-center text-[14px]">
+                            <span className="text-center text-[14px] break-all">
                               {infostation.name[i18next.language as AllLang]}
                             </span>
                           </div>
@@ -320,7 +339,7 @@ const SearchStation = memo(() => {
           ) : (
             <div className="flex justify-center items-center h-full flex-col">
               <span className="text-[var(--primary-muted-color)]!">
-                Станции по вашему запросу не найдены
+                {t("NotFound")}
               </span>
             </div>
           )}

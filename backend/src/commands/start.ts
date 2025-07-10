@@ -2,7 +2,6 @@ import { Message } from "node-telegram-bot-api";
 import { DbTGConncet } from "../function/getDbConnection";
 import { User } from "../type";
 import bot from "../bot";
-import global from "../global";
 
 import { t, changeLanguage } from "i18next";
 
@@ -81,7 +80,7 @@ export default async (msg: Message) => {
               {
                 text: t("mos"),
                 web_app: {
-                  url: `https://mos.miniappsmetro.ru`,
+                  url: `https://apps.miniappsmetro.ru`,
                 },
               },
             ],

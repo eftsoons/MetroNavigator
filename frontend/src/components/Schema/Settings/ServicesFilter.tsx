@@ -23,9 +23,6 @@ function ServicesFilter({ backfunction }: { backfunction: () => void }) {
   return (
     checkbox && (
       <>
-        <h1 className="w-full text-[20px] h-[32px] flex items-center">
-          {t("Filter")}
-        </h1>
         <div className="w-full h-full overflow-y-auto">
           <div className="flex flex-col gap-[8px]">
             {Object.entries(checkbox).map(([keys, data], index) => {

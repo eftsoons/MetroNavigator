@@ -62,13 +62,6 @@ function InfoCall({ station }: { station: { station: station } }) {
 
   return (
     <>
-      <div className="flex flex-col gap-[15px]">
-        <div className="flex items-center justify-between">
-          <h1 className="text-[28px] font-medium! w-[90%] break-words">
-            {t("FirstLastTrains")}
-          </h1>
-        </div>
-      </div>
       <div className="flex flex-col gap-[10px]">
         {Object.entries(schedule).map(([_, data], index) => (
           <div key={index} className="flex flex-col gap-[10px]">
@@ -105,7 +98,7 @@ function InfoCall({ station }: { station: { station: station } }) {
               </span>
             </div>
             <div className="bg-(--primary-color) rounded-[10px] p-[16px]! grid grid-cols-[1fr_auto_auto] gap-[5px_10px]">
-              <span className="whitespace-nowrap">По будням</span>
+              <span className="whitespace-nowrap">{t("OnWeekdays")}</span>
               <span className="text-(--primary-muted-color)! text-center">
                 {t("Even")}
               </span>

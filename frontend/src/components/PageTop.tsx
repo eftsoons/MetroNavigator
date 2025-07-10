@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode, useEffect } from "react";
+import { CSSProperties, ReactElement, ReactNode, useEffect } from "react";
 
 import CloseSVG from "@/svg/close";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,6 +18,11 @@ export function Page({
   ref,
   backbuttondisabled,
   headeractive,
+  classNameSheet,
+  headertitle,
+  headerdescription,
+  header,
+  headerbackbuttonfixed,
 }: {
   open: boolean;
   children: ReactNode;
@@ -29,6 +34,11 @@ export function Page({
   ref?: React.LegacyRef<HTMLDivElement>;
   backbuttondisabled?: boolean;
   headeractive?: boolean;
+  classNameSheet?: string;
+  headertitle?: string | ReactElement;
+  headerdescription?: string;
+  header?: ReactElement;
+  headerbackbuttonfixed?: boolean;
 }) {
   const AppPlatform = useSelector((data: Store) => data.platform.AppPlatform);
 
@@ -54,6 +64,7 @@ export function Page({
         // console.log(123);
         //поменять
       }}
+      className={classNameSheet}
     >
       <Sheet.Container
         style={{
@@ -88,15 +99,48 @@ export function Page({
             ...style,
           }}
         >
-          {!backbuttondisabled && (
-            <button
-              onClick={() => {
-                backfunction && backfunction();
-              }}
-              className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] absolute right-[1rem] top-[1.5rem] z-2"
-            >
-              <CloseSVG />
-            </button>
+          {(header ||
+            headertitle ||
+            headerdescription ||
+            headerbackbuttonfixed) && (
+            <div className="w-full flex justify-between items-center gap-[16px]">
+              <div className="w-full truncate">
+                {header ? (
+                  header
+                ) : (
+                  <>
+                    {typeof headertitle == "string" ? (
+                      <h1 className="text-[20px] truncate">{headertitle}</h1>
+                    ) : (
+                      headertitle
+                    )}
+                    <p className="text-[15px] text-[var(--primary-muted-color)]! truncate">
+                      {headerdescription}
+                    </p>
+                  </>
+                )}
+              </div>
+              {(!backbuttondisabled || headerbackbuttonfixed) &&
+                (headerbackbuttonfixed ? (
+                  <button
+                    onClick={() => {
+                      backfunction && backfunction();
+                    }}
+                    className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] fixed top-[1rem] right-[1rem] z-2"
+                  >
+                    <CloseSVG />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      backfunction && backfunction();
+                    }}
+                    className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px]"
+                  >
+                    <CloseSVG />
+                  </button>
+                ))}
+            </div>
           )}
           {children}
         </Sheet.Content>

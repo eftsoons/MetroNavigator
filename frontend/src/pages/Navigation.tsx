@@ -40,14 +40,6 @@ function Navigation() {
   const raw = useSelector((data: Store) => data.platform.raw);
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
 
-  const arrayerrorstation = [
-    ...new Set(
-      notifications?.flatMap((data) =>
-        data.stations.map((data) => data.stationId)
-      )
-    ),
-  ];
-
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -175,65 +167,6 @@ function Navigation() {
                     }
                   }
                 }
-
-                const stationicon = document.querySelector(
-                  `#icon-${routes.nodes[i]}`
-                );
-
-                const stationerror = arrayerrorstation.some(
-                  (data) => data == station.id
-                );
-
-                if (station) {
-                  node.svg.push(station.stationSvg.svg, station.textSvg.svg);
-                }
-
-                if (stationicon) {
-                  node.svg.push(stationicon.outerHTML);
-                } else {
-                  if (stationerror) {
-                    node.svg.push(`<g
-            x="${station.stationSvg.x}"
-            y="${station.stationSvg.y}"
-            transform="translate(${station.stationSvg.x - 11.5}, ${
-                      station.stationSvg.y - 11.5
-                    })"
-          >
-            <svg
-                  width="23"
-                  height="23"
-                  viewBox="0 0 23 23"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect
-                    x="0.75"
-                    y="0.75"
-                    width="21.5"
-                    height="21.5"
-                    rx="10.25"
-                    fill="var(--primary-bg)"
-                    stroke="var(--primary-text)"
-                    strokeWidth="1.5"
-                  ></rect>
-                  <path
-                    d="M11.5638 11.217V7"
-                    stroke="var(--primary-text)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                  <path
-                    d="M11.5627 14.6053C11.407 14.6053 11.2808 14.7315 11.2819 14.8871C11.2819 15.0427 11.4082 15.169 11.5638 15.169C11.7194 15.169 11.8457 15.0427 11.8457 14.8871C11.8457 14.7315 11.7194 14.6053 11.5627 14.6053"
-                    stroke="var(--primary-text)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </svg>
-          </g>`);
-                  }
-                }
               }
 
               return node;
@@ -303,8 +236,6 @@ function Navigation() {
   }, [Astation, Bstation]);
 
   const searchstation = useSelector((data: Store) => data.info.searchstation);
-
-  //переделать, закрывать всё только тогда, когда закроется основная менюшка
 
   return filter && schema && notifications ? (
     <>

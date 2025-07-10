@@ -20,31 +20,13 @@ import {
   TransformWrapper,
 } from "react-zoom-pan-pinch";
 
-import { servicesfilterdata } from "@/info";
+import { servicesfilterdata, typefilter } from "@/info";
 
 import ReactDOMServer from "react-dom/server";
 import IconInfo from "./IconInfo";
 import IconMap from "./IconMap";
 
-const typefilter = [
-  "BANK",
-  "COFFEE",
-  "SALES",
-  "PARKING",
-  "CANDY",
-  "ELEVATOR",
-  "BATTERY",
-  "FOOD",
-  "FLOWERS",
-  "CARRIER",
-  "VENDING",
-  "INVALID",
-  "TOILET",
-  "INFO",
-  "PRINT",
-  "OPTICS",
-  "THEATRE",
-] as const;
+import StationSvgAll from "@/function/StationSvgAll";
 
 const Map = memo(() => {
   const [iconzone, seticonzone] = useState<Array<string>>([]);
@@ -98,7 +80,21 @@ const Map = memo(() => {
       nodes[selectnode] &&
       nodes[selectnode].svg
     ) {
-      dispatch(setactivestation(nodes[selectnode].svg));
+      const Allsvg: string[] = [...nodes[selectnode].svg];
+
+      const Station: string[] = nodes[selectnode].infonode.station
+        .map((data) =>
+          StationSvgAll(
+            data.station,
+            filter,
+            arrayerrorstation.some((datacheck) => datacheck == data.station.id)
+          )
+        )
+        .flat();
+
+      Allsvg.push(...Station);
+
+      dispatch(setactivestation(Allsvg));
 
       timeout = setTimeout(() => {
         if (transformRef.current && mapactivestation.current) {
@@ -108,12 +104,12 @@ const Map = memo(() => {
             300
           );
 
-          timeout2 = setTimeout(() => {
-            if (transformRef.current) {
-              transformRef.current.zoomOut(0.35);
-              //мб снова переделать
-            }
-          }, 600);
+          // timeout2 = setTimeout(() => {
+          //   if (transformRef.current) {
+          //     transformRef.current.zoomOut(0.35);
+          //     //мб снова переделать
+          //   }
+          // }, 600);
         }
       }, 250);
     }
@@ -122,7 +118,7 @@ const Map = memo(() => {
       timeout && clearTimeout(timeout);
       timeout2 && clearTimeout(timeout2);
     };
-  }, [nodes, selectnode]);
+  }, [notifications, selectnode, filter, schema?.stations, nodes]);
 
   useEffect(() => {
     if (notifications && schema && filter) {
@@ -134,7 +130,44 @@ const Map = memo(() => {
 
           const { x, y } = data.stationSvg;
 
-          if (filterdata.length == 1) {
+          if (arrayerrorstation.some((datacheck) => datacheck == data.id)) {
+            return ReactDOMServer.renderToStaticMarkup(
+              <g x={x} y={y} transform={`translate(${x - 11.5}, ${y - 11.5})`}>
+                <svg
+                  width="23"
+                  height="23"
+                  viewBox="0 0 23 23"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    x="0.75"
+                    y="0.75"
+                    width="21.5"
+                    height="21.5"
+                    rx="10.25"
+                    fill="var(--primary-bg)"
+                    stroke="var(--primary-text)"
+                    strokeWidth="1.5"
+                  ></rect>
+                  <path
+                    d="M11.5638 11.217V7"
+                    stroke="var(--primary-text)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                  <path
+                    d="M11.5627 14.6053C11.407 14.6053 11.2808 14.7315 11.2819 14.8871C11.2819 15.0427 11.4082 15.169 11.5638 15.169C11.7194 15.169 11.8457 15.0427 11.8457 14.8871C11.8457 14.7315 11.7194 14.6053 11.5627 14.6053"
+                    stroke="var(--primary-text)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  ></path>
+                </svg>
+              </g>
+            );
+          } else if (filterdata.length == 1) {
             const info = servicesfilterdata[filterdata[0]];
             const element = cloneElement(info.svg, { width: 23, height: 23 });
 
@@ -186,58 +219,7 @@ const Map = memo(() => {
         })
         .filter(Boolean) as Array<string>;
 
-      const ErrorStation = arrayerrorstation
-        .map((stationID) => {
-          const station = schema.stations.find(
-            (data2) => data2.id == stationID
-          );
-
-          if (station) {
-            const { x, y } = station.stationSvg;
-
-            return ReactDOMServer.renderToStaticMarkup(
-              <g x={x} y={y} transform={`translate(${x - 11.5}, ${y - 11.5})`}>
-                <svg
-                  width="23"
-                  height="23"
-                  viewBox="0 0 23 23"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <rect
-                    x="0.75"
-                    y="0.75"
-                    width="21.5"
-                    height="21.5"
-                    rx="10.25"
-                    fill="var(--primary-bg)"
-                    stroke="var(--primary-text)"
-                    strokeWidth="1.5"
-                  ></rect>
-                  <path
-                    d="M11.5638 11.217V7"
-                    stroke="var(--primary-text)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                  <path
-                    d="M11.5627 14.6053C11.407 14.6053 11.2808 14.7315 11.2819 14.8871C11.2819 15.0427 11.4082 15.169 11.5638 15.169C11.7194 15.169 11.8457 15.0427 11.8457 14.8871C11.8457 14.7315 11.7194 14.6053 11.5627 14.6053"
-                    stroke="var(--primary-text)"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </svg>
-              </g>
-            );
-          } else {
-            return null;
-          }
-        })
-        .filter(Boolean) as string[];
-
-      seticonzone([...(filterstation ? filterstation : []), ...ErrorStation]);
+      seticonzone([...(filterstation ? filterstation : [])]);
     }
   }, [notifications, filter, schema?.stations]);
 

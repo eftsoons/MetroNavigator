@@ -52,14 +52,18 @@ const IconInfo = memo(
               <Station
                 stationid={Astation}
                 type="A"
-                arrayerrorstation={arrayerrorstation}
+                arrayerrorstation={arrayerrorstation.some(
+                  (data) => data == Astation
+                )}
               />
             )}
             {(Bstation || Bstation == 0) && (
               <Station
                 stationid={Bstation}
                 type="B"
-                arrayerrorstation={arrayerrorstation}
+                arrayerrorstation={arrayerrorstation.some(
+                  (data) => data == Bstation
+                )}
               />
             )}
             {infostation &&
@@ -75,7 +79,15 @@ const IconInfo = memo(
                     ].station.id
                   }
                   type={Astation ? "B" : "A"}
-                  arrayerrorstation={arrayerrorstation}
+                  arrayerrorstation={arrayerrorstation.some(
+                    (data) =>
+                      data ==
+                      infostation[
+                        infostation.length > selectinfostation
+                          ? selectinfostation
+                          : 0
+                      ].station.id
+                  )}
                 />
               )}
           </svg>

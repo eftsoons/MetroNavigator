@@ -110,7 +110,6 @@ export default async () => {
       }
     }
   } catch (error) {
-    console.log(error);
     const data = Object.keys(global.info) as Array<AllMetro>;
 
     for (const metro of data) {

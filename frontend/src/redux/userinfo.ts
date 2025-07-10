@@ -2,6 +2,7 @@ import { filterstation, Store } from "@/type";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 import axios from "axios";
+import { setsnackbar } from "./info";
 
 const initialState: Store["userinfo"] = {
   showtop: false,
@@ -92,24 +93,35 @@ export const setTypeNodes = createAsyncThunk(
     }: {
       typenodes: number;
     },
-    { getState }
+    { getState, dispatch }
   ) => {
-    const state = getState() as Store;
+    try {
+      const state = getState() as Store;
 
-    const response = await axios.post(
-      `${import.meta.env.VITE_API_URL}/settypenodes`,
-      { typenodes: typenodes },
-      {
-        headers: {
-          authorization: state.platform.raw,
-          platform: state.platform.TypePlatform,
-          region: state.info.region,
-          refid: state.platform.ref,
-        },
-      }
-    );
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/settypenodes`,
+        { typenodes: typenodes },
+        {
+          headers: {
+            authorization: state.platform.raw,
+            platform: state.platform.TypePlatform,
+            region: state.info.region,
+            refid: state.platform.ref,
+          },
+        }
+      );
 
-    return response.data.typenodes;
+      return response.data.typenodes;
+    } catch {
+      dispatch(
+        setsnackbar({
+          time: 5000,
+          title: "Error",
+          text: "FailedToSave",
+          icon: "error",
+        })
+      );
+    }
   }
 );
 
@@ -213,6 +225,9 @@ const counterSlice = createSlice({
       state.routesave = action.payload;
     },
     setInfoUser: (state, action) => {
+      state.info = { ...state.info, ...action.payload };
+    },
+    setTypeNodes2: (state, action) => {
       state.info = { ...state.info, ...action.payload };
     },
   },

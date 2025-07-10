@@ -74,6 +74,7 @@ const InfoNodes = memo(
         }}
         back={true}
         headeractive={true}
+        style={{ zIndex: "-1" }}
       >
         {!openerrorroute ? (
           <>
@@ -158,9 +159,7 @@ const InfoNodes = memo(
                           </span>
                         </div>
                         <div className="flex w-full">
-                          {!data.transfer || data.transfer == 0
-                            ? t("WithoutTransfers")
-                            : t("NumTransfers", { number: data.transfer })}
+                          {t("NumTransfers", { count: data.transfer })}
                         </div>
                         <div className="flex gap-[5px]">
                           {data.infonode.line.map(
@@ -199,6 +198,7 @@ const InfoNodes = memo(
                 className="flex flex-col gap-[12px] z-1"
                 backbuttondisabled={TypePlatform != "vk"}
                 back={true}
+                headerbackbuttonfixed={TypePlatform == "vk"}
               >
                 <InfoNodesDetalis node={nodes[selectnode]} />
               </PageAnimation>

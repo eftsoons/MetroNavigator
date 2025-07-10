@@ -80,8 +80,8 @@ type station = {
     exitNumber: number;
     location: { lat: number; lon: number };
     title: { ru: string; en: string };
-    tram: null;
-    trolleybus: null;
+    tram: string;
+    trolleybus: string;
   }>;
   history: null;
   id: number;

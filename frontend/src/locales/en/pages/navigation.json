@@ -25,8 +25,8 @@
   "SearchStation": "Station search",
   "PastRoutes": "Recent routes",
   "Clear": "Clear",
-  "WithoutTransfers": "No transfers",
-  "NumTransfers": "{{number}} transfers",
+  "NumTransfers_zero": "No transfers",
+  "NumTransfers_many": "{{count}} transfers",
   "DetalisRoute": "Route details",
   "ErrorRoute": "Route loading error!",
   "Reload": "Reload",
@@ -68,5 +68,8 @@
   "EndVagon": "end vagon",
   "AllVagon": "all vagon",
   "NotVagon": "unknown",
-  "ErrorPosition": "Error"
+  "ErrorPosition": "Error",
+  "NotFound": "No stations were found for your search",
+  "Tram": "Trams",
+  "Trolleybus": "Trolleybuses"
 }

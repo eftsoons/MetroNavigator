@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 
 import i18next from "i18next";
 import { AllLang } from "@/locales/i18n";
+import TimeSeconds from "@/function/TimeSeconds";
 
 function InfoStationAll({
   station,
@@ -50,9 +51,6 @@ function InfoStationAll({
     <>
       <>
         <div className="flex flex-col gap-[15px]">
-          <h1 className="text-[28px] font-medium!">
-            {station.station.name[i18next.language as AllLang]}
-          </h1>
           <div className="flex items-center gap-[15px]">
             <img
               className="h-[30px] w-[30px] object-contain"
@@ -65,7 +63,15 @@ function InfoStationAll({
             </span>
           </div>
           {station.station.workTime[day] &&
-          station.station.workTime[day].open ? (
+          station.station.workTime[day].open &&
+          station.station.workTime[day].close &&
+          lastupdate &&
+          TimeSeconds(lastupdate) >=
+            TimeSeconds(station.station.workTime[day].open) &&
+          (TimeSeconds(lastupdate) >=
+            TimeSeconds(station.station.workTime[day].close) ||
+            TimeSeconds(station.station.workTime[day].open) >=
+              TimeSeconds(station.station.workTime[day].close)) ? (
             <span className="text-[var(--primary-muted-color)]!">
               {t("OpenHours", {
                 from: station.station.workTime[day].open,
@@ -256,6 +262,11 @@ function InfoStationAll({
         className="flex flex-col gap-[10px]"
         backfunction={() => setopenexit(false)}
         backbuttondisabled={TypePlatform != "vk"}
+        headertitle={
+          <h1 className="text-[28px] font-medium! break-all w-[90%]">
+            {t("ExitAndTransport")}
+          </h1>
+        }
         back={true}
       >
         <InfoExit station={station} />
@@ -264,9 +275,9 @@ function InfoStationAll({
         open={openschema}
         className="flex flex-col gap-[5px]"
         backfunction={() => setopenschema(false)}
-        backbuttondisabled={TypePlatform != "vk"}
         back={true}
         style={{ padding: "0" }}
+        headerbackbuttonfixed={TypePlatform == "vk"}
       >
         <InfoSchema station={station} />
       </PageAnimation>
@@ -276,6 +287,7 @@ function InfoStationAll({
         backfunction={() => setopenschedule(false)}
         backbuttondisabled={TypePlatform != "vk"}
         back={true}
+        headertitle={t("FirstLastTrains")}
       >
         <InfSchedule station={station} />
       </PageAnimation>

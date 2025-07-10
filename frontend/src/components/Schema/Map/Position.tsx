@@ -93,62 +93,74 @@ const Position = memo(() => {
         );
       }
     } else if (TypePlatform == "vk") {
-      bridge.send("VKWebAppGetGeodata").then((data) => {
-        if (data.available) {
-          const lat = data.lat;
-          const lon = data.long;
+      bridge
+        .send("VKWebAppGetGeodata")
+        .then((data) => {
+          if (data.available) {
+            const lat = data.lat;
+            const lon = data.long;
 
-          let searchstation = undefined as undefined | station;
+            let searchstation = undefined as undefined | station;
 
-          schema?.stations.forEach((data) => {
-            if (
-              !searchstation ||
-              haversineDistance(
-                data.location.lat,
-                data.location.lon,
-                lat,
-                lon
-              ) <
+            schema?.stations.forEach((data) => {
+              if (
+                !searchstation ||
                 haversineDistance(
-                  searchstation.location.lat,
-                  searchstation.location.lon,
+                  data.location.lat,
+                  data.location.lon,
                   lat,
                   lon
-                )
-            ) {
-              searchstation = data;
-            }
-          });
-
-          if (searchstation) {
-            const line = schema?.lines.find(
-              (data) => data.id == searchstation?.lineId
-            ) as line;
-
-            const stationall = schema?.stations
-              ? schema.stations
-                  .filter(
-                    (data) =>
-                      data.name.ru == searchstation?.name.ru &&
-                      data.id != searchstation?.id
+                ) <
+                  haversineDistance(
+                    searchstation.location.lat,
+                    searchstation.location.lon,
+                    lat,
+                    lon
                   )
-                  .map((station) => {
-                    const line = schema.lines.find(
-                      (data) => data.id == station.lineId
-                    ) as line;
+              ) {
+                searchstation = data;
+              }
+            });
 
-                    return { station: station, line: line };
-                  })
-              : [];
+            if (searchstation) {
+              const line = schema?.lines.find(
+                (data) => data.id == searchstation?.lineId
+              ) as line;
 
-            dispatch(setinfoselectstation(0));
+              const stationall = schema?.stations
+                ? schema.stations
+                    .filter(
+                      (data) =>
+                        data.name.ru == searchstation?.name.ru &&
+                        data.id != searchstation?.id
+                    )
+                    .map((station) => {
+                      const line = schema.lines.find(
+                        (data) => data.id == station.lineId
+                      ) as line;
 
-            dispatch(
-              setinfostation([
-                { station: searchstation, line: line },
-                ...stationall,
-              ])
-            );
+                      return { station: station, line: line };
+                    })
+                : [];
+
+              dispatch(setinfoselectstation(0));
+
+              dispatch(
+                setinfostation([
+                  { station: searchstation, line: line },
+                  ...stationall,
+                ])
+              );
+            } else {
+              dispatch(
+                setsnackbar({
+                  time: 5000,
+                  title: t("ErrorPosition"),
+                  text: t("NotLocation"),
+                  icon: "error",
+                })
+              );
+            }
           } else {
             dispatch(
               setsnackbar({
@@ -159,7 +171,8 @@ const Position = memo(() => {
               })
             );
           }
-        } else {
+        })
+        .catch(() =>
           dispatch(
             setsnackbar({
               time: 5000,
@@ -167,9 +180,8 @@ const Position = memo(() => {
               text: t("NotLocation"),
               icon: "error",
             })
-          );
-        }
-      });
+          )
+        );
     }
   };
 

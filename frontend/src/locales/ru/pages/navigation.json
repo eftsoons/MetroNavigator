@@ -25,8 +25,10 @@
   "SearchStation": "Поиск по станциям",
   "PastRoutes": "Прошлые маршруты",
   "Clear": "Очистить",
-  "WithoutTransfers": "Без пересадок",
-  "NumTransfers": "{{number}} пересадки",
+  "NumTransfers_zero": "Без пересадок",
+  "NumTransfers_one": "{{count}} пересадка",
+  "NumTransfers_few": "{{count}} пересадки",
+  "NumTransfers_many": "{{count}} пересадки",
   "DetalisRoute": "Детали маршрута",
   "ErrorRoute": "Ошибка загрузки машрута!",
   "Reload": "Перезагрузить",
@@ -68,5 +70,8 @@
   "EndVagon": "последний вагон",
   "AllVagon": "все",
   "NotVagon": "неизвестно",
-  "ErrorPosition": "Ошибка"
+  "ErrorPosition": "Ошибка",
+  "NotFound": "Станции по вашему запросу не найдены",
+  "Tram": "Трамваи",
+  "Trolleybus": "Троллейбусы"
 }

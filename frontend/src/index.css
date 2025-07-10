@@ -74,6 +74,11 @@ button:active:not(:disabled) {
   transition: 0.25s;
 }
 
+button:disabled {
+  opacity: 0.5;
+  transition: 0.25s;
+}
+
 .spinner {
   fill: var(--primary-accept);
   animation: spinner 2s infinite linear;
