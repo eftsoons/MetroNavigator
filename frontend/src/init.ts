@@ -25,6 +25,8 @@ import bridge from "@vkontakte/vk-bridge";
 import { setInfoUser } from "./redux/userinfo";
 import { setRegion } from "./redux/info";
 
+import i18n from "i18next";
+
 /**
  * Initializes the application and configures its dependencies.
  */
@@ -75,11 +77,16 @@ export function init(store: any): void {
     store.dispatch(setisDark(isDark));
     store.dispatch(setRegion("mos"));
 
+    if (InfoUser) {
+      i18n.changeLanguage(InfoUser.language_code);
+    }
+
     console.log("It's tg");
   } else if (bridge.isEmbedded() && vkid) {
     store.dispatch(setPlatform("vk"));
 
     const dataURL = new URLSearchParams(location.search);
+    const language = dataURL.get("vk_language");
 
     store.dispatch(setAppRaw(location.origin + location.search));
     store.dispatch(setAppPlatform(dataURL.get("vk_platform")));
@@ -170,6 +177,10 @@ export function init(store: any): void {
     //     })
     //   );
     // });
+
+    if (language) {
+      i18n.changeLanguage(language);
+    }
 
     console.log("It's vk");
   } else {

@@ -7,8 +7,10 @@ import {
 import { Store } from "@/type";
 import { memo, MutableRefObject, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import i18next from "i18next";
 
 import ReplactTextTspan from "@/function/ReplaceTextTspan";
+import { AllLang } from "@/locales/i18n";
 
 const IconMap = memo(
   ({
@@ -50,11 +52,12 @@ const IconMap = memo(
     }, [schema?.stations]);
 
     const textSVG = useMemo(() => {
-      return schema?.stations.map((data) =>
-        ReplactTextTspan(
-          data.textSvg.svg,
-          data.name[user?.language_code == "ru" ? "ru" : "en"]
-        )
+      return [
+        ...new Map(
+          schema?.stations.map((station) => [station.name.ru, station])
+        ).values(),
+      ].map((station) =>
+        ReplactTextTspan(station, station.name[i18next.language as AllLang])
       );
     }, [schema?.stations, user?.language_code]);
 

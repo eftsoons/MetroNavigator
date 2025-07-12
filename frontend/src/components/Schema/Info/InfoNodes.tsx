@@ -5,7 +5,7 @@ import TimeForDate from "@/function/TimeForDate";
 import Time from "@/function/TimeToMinits";
 import Switch from "@/svg/switch";
 import { Store } from "@/type";
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import InfoNodesDetalis from "./InfoNodesDetalis";
 import CloseSVG from "@/svg/close";
 
@@ -21,19 +21,20 @@ import {
   setsearchstation,
   setselectnode,
 } from "@/redux/info";
+import TimeSeconds from "@/function/TimeSeconds";
 
 const InfoNodes = memo(
   ({
     opennodes,
     openerrorroute,
-    setopennodes,
-    setopenerrorroute,
+    nodesrouteback,
+    errorrouteback,
     reloadnodes,
   }: {
     opennodes: boolean;
     openerrorroute: boolean;
-    setopennodes: Function;
-    setopenerrorroute: Function;
+    nodesrouteback: Function;
+    errorrouteback: Function;
     reloadnodes: () => void;
   }) => {
     const { t } = useTranslation();
@@ -46,30 +47,32 @@ const InfoNodes = memo(
     const Bstation = useSelector((data: Store) => data.info.Bstation);
     const nodes = useSelector((data: Store) => data.info.nodes);
     const selectnode = useSelector((data: Store) => data.info.selectnode);
-    const infostation = useSelector((data: Store) => data.info.infostation);
     const TypePlatform = useSelector(
       (data: Store) => data.platform.TypePlatform
     );
 
-    const time = Date.now();
+    const [lastupdate, setlastupdate] = useState(new Date());
 
-    const backfunction = () => {
-      setopennodes(false);
-    };
+    useEffect(() => {
+      const intervalid = setInterval(() => {
+        if (opennodes || openerrorroute) {
+          setlastupdate(new Date());
+        }
+      }, 10000);
+
+      return () => clearInterval(intervalid);
+    }, []);
 
     return (
       <PageAnimation
-        open={(opennodes && !Boolean(infostation)) || openerrorroute}
+        open={opennodes || openerrorroute}
         className="h-auto!"
         contentheight={true}
-        backbuttondisabled={!openerrorroute}
+        headerbackbuttonfixed={openerrorroute}
         backfunction={() => {
-          setopennodes(false);
+          nodesrouteback();
           if (openerrorroute) {
-            dispatch(setAstation(null));
-            dispatch(setBstation(null));
-
-            setopenerrorroute(false);
+            errorrouteback();
           }
         }}
         back={true}
@@ -113,7 +116,7 @@ const InfoNodes = memo(
                   </div>
                   <div className="h-[30px] w-[30px] flex items-center p-[8px]! bg-(--primary-button) rounded-[999px]">
                     <button
-                      onClick={backfunction}
+                      onClick={() => nodesrouteback()}
                       className="w-[30px] h-[30px]"
                     >
                       <CloseSVG />
@@ -128,12 +131,34 @@ const InfoNodes = memo(
                 mousewheel={{
                   enabled: true,
                 }}
-                className="w-full"
+                className="w-full pr-[20px]!"
               >
                 {nodes.map((data, index) => {
                   const minuts = Number(Time(data.time));
 
-                  const times = new Date(time + minuts * 60 * 1000);
+                  const times = new Date(lastupdate);
+
+                  times.setMinutes(times.getMinutes() + minuts);
+
+                  const allworkstation = data.infonode.every(
+                    (data) =>
+                      data.type == "transfer" ||
+                      data.station.some(
+                        (data) =>
+                          !data.workTime[times.getDay()].open ||
+                          !data.workTime[times.getDay()].close ||
+                          (TimeSeconds(TimeForDate(times)) >=
+                            TimeSeconds(data.workTime[times.getDay()].open) &&
+                            (TimeSeconds(TimeForDate(times)) >=
+                              TimeSeconds(
+                                data.workTime[times.getDay()].close
+                              ) ||
+                              TimeSeconds(data.workTime[times.getDay()].open) >=
+                                TimeSeconds(
+                                  data.workTime[times.getDay()].close
+                                )))
+                      )
+                  );
 
                   return (
                     <SwiperSlide key={index} style={{ width: "auto" }}>
@@ -154,17 +179,19 @@ const InfoNodes = memo(
                           <span>
                             {minuts} {t("m")}
                           </span>
-                          <span className="text-(--primary-muted-color)!">
-                            ~{TimeForDate(times)}
-                          </span>
+                          {allworkstation && (
+                            <span className="text-(--primary-muted-color)!">
+                              ~{TimeForDate(times)}
+                            </span>
+                          )}
                         </div>
                         <div className="flex w-full">
                           {t("NumTransfers", { count: data.transfer })}
                         </div>
                         <div className="flex gap-[5px]">
-                          {data.infonode.line.map(
+                          {data.infonode.map(
                             (data, index) =>
-                              data.type == "line" && (
+                              data.type == "connect" && (
                                 <div
                                   key={index}
                                   className="flex items-center gap-[5px]"
@@ -200,7 +227,10 @@ const InfoNodes = memo(
                 back={true}
                 headerbackbuttonfixed={TypePlatform == "vk"}
               >
-                <InfoNodesDetalis node={nodes[selectnode]} />
+                <InfoNodesDetalis
+                  node={nodes[selectnode]}
+                  lastupdate={lastupdate}
+                />
               </PageAnimation>
             )}
           </>

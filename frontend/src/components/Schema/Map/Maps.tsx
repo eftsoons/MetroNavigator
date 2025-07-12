@@ -28,7 +28,7 @@ import IconMap from "./IconMap";
 
 import StationSvgAll from "@/function/StationSvgAll";
 
-const Map = memo(() => {
+const Maps = memo(() => {
   const [iconzone, seticonzone] = useState<Array<string>>([]);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -80,15 +80,21 @@ const Map = memo(() => {
       nodes[selectnode] &&
       nodes[selectnode].svg
     ) {
-      const Allsvg: string[] = [...nodes[selectnode].svg];
+      const Allsvg: string[] = nodes[selectnode].svg.flat();
 
-      const Station: string[] = nodes[selectnode].infonode.station
+      const Station: string[] = nodes[selectnode].infonode
         .map((data) =>
-          StationSvgAll(
-            data.station,
-            filter,
-            arrayerrorstation.some((datacheck) => datacheck == data.station.id)
-          )
+          data.type == "connect"
+            ? data.station
+                .map((data) =>
+                  StationSvgAll(
+                    data,
+                    filter,
+                    arrayerrorstation.some((datacheck) => datacheck == data.id)
+                  )
+                )
+                .flat()
+            : []
         )
         .flat();
 
@@ -104,12 +110,12 @@ const Map = memo(() => {
             300
           );
 
-          // timeout2 = setTimeout(() => {
-          //   if (transformRef.current) {
-          //     transformRef.current.zoomOut(0.35);
-          //     //мб снова переделать
-          //   }
-          // }, 600);
+          timeout2 = setTimeout(() => {
+            if (transformRef.current) {
+              transformRef.current.zoomOut(0.35);
+              //мб снова переделать
+            }
+          }, 600);
         }
       }, 250);
     }
@@ -316,4 +322,4 @@ const Map = memo(() => {
   );
 });
 
-export default Map;
+export default Maps;

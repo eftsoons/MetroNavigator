@@ -18,14 +18,11 @@ import {
   setinfostation,
 } from "./redux/info";
 import { Store } from "./type";
-import { useTranslation } from "react-i18next";
 import GetStation from "./function/GetStation";
 import { getSchemaImg } from "./redux/schemaimg";
 // import bridge from "@vkontakte/vk-bridge";
 
 export function App() {
-  const { i18n } = useTranslation();
-
   const dispatch = useDispatch<AppDispatch>();
 
   const schema = useSelector((data: Store) => data.schema);
@@ -33,7 +30,6 @@ export function App() {
   const AppPlatform = useSelector((data: Store) => data.platform.AppPlatform);
   const TypePlatform = useSelector((data: Store) => data.platform.TypePlatform);
   const region = useSelector((data: Store) => data.info.region);
-  const user = useSelector((data: Store) => data.userinfo.info);
   const isDark = useSelector((data: Store) => data.platform.isDark);
   const startParam = useSelector((data: Store) => data.platform.startParam);
 
@@ -56,14 +52,6 @@ export function App() {
     //   dispatch(setRegion("mos"));
     // }
   }, []);
-
-  useEffect(() => {
-    if (user?.language_code == "ru") {
-      i18n.changeLanguage("ru");
-    } else {
-      i18n.changeLanguage("en");
-    }
-  }, [user]);
 
   useEffect(() => {
     if (region) {

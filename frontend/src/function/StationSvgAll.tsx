@@ -117,10 +117,7 @@ function StationSvgAll(
   }
 
   stationsvg.push(
-    ReplactTextTspan(
-      station.textSvg.svg,
-      station.name[i18next.language as AllLang]
-    )
+    ReplactTextTspan(station, station.name[i18next.language as AllLang])
   );
 
   return stationsvg;

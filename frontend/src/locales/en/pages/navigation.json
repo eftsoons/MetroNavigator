@@ -71,5 +71,6 @@
   "ErrorPosition": "Error",
   "NotFound": "No stations were found for your search",
   "Tram": "Trams",
-  "Trolleybus": "Trolleybuses"
+  "Trolleybus": "Trolleybuses",
+  "Deleted": "Deleted"
 }

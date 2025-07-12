@@ -1,12 +1,4 @@
-import {
-  Store,
-  schema,
-  notifications,
-  station,
-  line,
-  wagons,
-  connectinfo,
-} from "@/type";
+import { Store, schema, station, line, wagons, connectinfo } from "@/type";
 
 import { useDispatch, useSelector } from "react-redux";
 import Button from "@/components/Button";
@@ -47,7 +39,7 @@ const InfoStation = memo(() => {
   } | null>(null);
   const [connects, setconnects] = useState<Array<connectinfo>>([]);
   const [infostationall, setinfostationall] = useState(false);
-  const [lastupdate, setlastupdate] = useState<string | null>(null);
+  const [lastupdate, setlastupdate] = useState<Date>(new Date());
 
   const dispatch = useDispatch();
 
@@ -66,9 +58,7 @@ const InfoStation = memo(() => {
     (data) =>
       station &&
       data.stations.find((data) => data.stationId == station.station.id)
-  ) as notifications;
-
-  const day = new Date().getDay();
+  );
 
   useEffect(() => {
     if (infostation && infostation[selectinfostation].station) {
@@ -111,8 +101,6 @@ const InfoStation = memo(() => {
       data: wagons;
     };
   }) => {
-    setlastupdate(TimeForDate(new Date()));
-
     setconnects((prev) =>
       prev
         .map((data) => {
@@ -145,31 +133,37 @@ const InfoStation = memo(() => {
         .then(handleaxios);
 
       const intervalid = setInterval(() => {
-        axios
-          .get(
-            `${import.meta.env.VITE_API_URL_MOS}/api/stations/v2/${
-              station.station.id
-            }/wagons`
-          )
-          .then(handleaxios);
+        if (infostation) {
+          axios
+            .get(
+              `${import.meta.env.VITE_API_URL_MOS}/api/stations/v2/${
+                station.station.id
+              }/wagons`
+            )
+            .then(handleaxios);
+
+          setlastupdate(new Date());
+        }
       }, 10000);
 
       const intervalid2 = setInterval(() => {
-        setconnects((prev) =>
-          prev.map((data) => {
-            if (data.wagon) {
-              return {
-                ...data,
-                wagon: {
-                  ...data.wagon,
-                  arrivalTime: data.wagon.arrivalTime - 1,
-                },
-              };
-            } else {
-              return data;
-            }
-          })
-        );
+        if (infostation) {
+          setconnects((prev) =>
+            prev.map((data) => {
+              if (data.wagon) {
+                return {
+                  ...data,
+                  wagon: {
+                    ...data.wagon,
+                    arrivalTime: data.wagon.arrivalTime - 1,
+                  },
+                };
+              } else {
+                return data;
+              }
+            })
+          );
+        }
       }, 1000);
 
       return () => {
@@ -178,6 +172,19 @@ const InfoStation = memo(() => {
       };
     }
   }, [station]);
+
+  const workstation =
+    station &&
+    (!station.station.workTime[lastupdate.getDay()].open ||
+      !station.station.workTime[lastupdate.getDay()].close)
+      ? true
+      : station &&
+        TimeSeconds(TimeForDate(lastupdate)) >=
+          TimeSeconds(station.station.workTime[lastupdate.getDay()].open) &&
+        (TimeSeconds(TimeForDate(lastupdate)) >=
+          TimeSeconds(station.station.workTime[lastupdate.getDay()].close) ||
+          TimeSeconds(station.station.workTime[lastupdate.getDay()].open) >=
+            TimeSeconds(station.station.workTime[lastupdate.getDay()].close));
 
   return (
     station && (
@@ -327,27 +334,19 @@ const InfoStation = memo(() => {
                 </button>
               </div>
             </div>
-            {station.station.workTime[day] &&
-            station.station.workTime[day].open &&
-            station.station.workTime[day].close &&
-            lastupdate &&
-            TimeSeconds(lastupdate) >=
-              TimeSeconds(station.station.workTime[day].open) &&
-            (TimeSeconds(lastupdate) >=
-              TimeSeconds(station.station.workTime[day].close) ||
-              TimeSeconds(station.station.workTime[day].open) >=
-                TimeSeconds(station.station.workTime[day].close)) ? (
-              <span className="text-[var(--primary-muted-color)]!">
-                {t("OpenHours", {
-                  from: station.station.workTime[day].open,
-                  to: station.station.workTime[day].close,
-                })}
-              </span>
-            ) : (
-              <span className="text-[var(--primary-muted-color)]!">
-                {t("NotWorkingToday")}
-              </span>
-            )}
+            {station.station.workTime[lastupdate.getDay()] &&
+              station.station.workTime[lastupdate.getDay()].open &&
+              station.station.workTime[lastupdate.getDay()].close && (
+                <span className="text-[var(--primary-muted-color)]!">
+                  {workstation
+                    ? t("OpenHours", {
+                        from: station.station.workTime[lastupdate.getDay()]
+                          .open,
+                        to: station.station.workTime[lastupdate.getDay()].close,
+                      })
+                    : t("NotWorkingToday")}
+                </span>
+              )}
           </div>
           {notifications && notifications.length > 0 && (
             <div className="p-[12px]! bg-[var(--primary-warn)] border-solid border-[1px] border-[var(--primary-border-warn)] rounded-[10px] h-[100px] overflow-x-hidden">
@@ -379,6 +378,7 @@ const InfoStation = memo(() => {
           )}
           <div className="flex gap-[10px]">
             <Button
+              disabled={!workstation}
               onClick={() => {
                 handleStation("A")(
                   station ? station.station.id : null,
@@ -390,6 +390,7 @@ const InfoStation = memo(() => {
               {t("From")}
             </Button>
             <Button
+              disabled={!workstation}
               onClick={() => {
                 handleStation("B")(
                   station ? station.station.id : null,
@@ -484,9 +485,9 @@ const InfoStation = memo(() => {
           >
             <InfoStationAll
               station={station}
-              transfer={infostation}
               connects={connects}
               lastupdate={lastupdate}
+              transfer={infostation}
             />
           </PageAnimation>
         )}

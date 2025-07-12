@@ -1,4 +1,4 @@
-import { CSSProperties, ReactNode } from "react";
+import { CSSProperties, MouseEventHandler, ReactNode } from "react";
 
 function Button({
   children,
@@ -9,7 +9,7 @@ function Button({
   disabled,
 }: {
   children?: ReactNode;
-  onClick?: () => void;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   className?: string;
   href?: string | false;
   style?: CSSProperties;

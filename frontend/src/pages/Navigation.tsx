@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Store, line, station, node, route, routesave } from "@/type";
+import { Store, node, route, routesave } from "@/type";
 import Reload from "./Reload";
 
 import { Page } from "@/components/PageOpacity";
@@ -10,7 +10,13 @@ import SearchStation from "../components/Schema/Map/SearchStation";
 import axios from "axios";
 import InfoNodes from "@/components/Schema/Info/InfoNodes";
 import "@/components/Button";
-import { setsaveroutes, setnodes, setselectnode } from "@/redux/info";
+import {
+  setsaveroutes,
+  setnodes,
+  setselectnode,
+  setAstation,
+  setBstation,
+} from "@/redux/info";
 import { fetchUser, setuserroutesave } from "@/redux/userinfo";
 import { AppDispatch } from "@/redux";
 import { getSchema } from "@/redux/schema";
@@ -21,10 +27,10 @@ import Position from "@/components/Schema/Map/Position";
 import InfoStation from "@/components/Schema/Info/InfoStation";
 import Info from "@/components/Schema/Map/Info";
 
-import Map from "@/components/Schema/Map/Map";
+import Maps from "@/components/Schema/Map/Maps";
 import SetRegion from "@/components/Schema/Map/SetRegion";
 
-function Navigation() {
+const Navigation = memo(() => {
   const [opennodes, setopennodes] = useState(false);
   const [openerrorroute, setopenerrorroute] = useState(false);
 
@@ -75,67 +81,42 @@ function Navigation() {
         }) => {
           if (response.data.process) {
             const nodes = response.data.routes.map((routes) => {
-              const node = {
-                infonode: { station: [], line: [] },
+              const node: node = {
+                infonode: [],
                 svg: [],
                 time: routes.time,
                 transfer: routes.transfers,
-              } as node;
+              };
 
               for (let i = 0; i < routes.nodes.length; i++) {
                 const station = schema?.stations.find(
                   (data) => data.id == routes.nodes[i]
-                ) as station;
-
-                let lineindex = node.infonode.line.findIndex(
-                  (data) =>
-                    data.type == "line" && data.line.id == station.lineId
                 );
 
-                if (lineindex == -1) {
-                  const line = schema?.lines.find(
-                    (data) => data.id == station?.lineId
-                  ) as line;
-
-                  lineindex =
-                    node.infonode.line.push({
-                      type: "line",
-                      line: line,
-                      pathLength: 0,
-                    }) - 1;
-                }
-
-                const connect = schema?.connections?.find(
-                  (data) =>
-                    (data.stationFromId == routes.nodes[i + 1] &&
-                      data.stationToId == routes.nodes[i]) ||
-                    (data.stationFromId == routes.nodes[i] &&
-                      data.stationToId == routes.nodes[i + 1])
+                const line = schema?.lines.find(
+                  (dataline) => dataline.id == station?.lineId
                 );
 
-                if (connect) {
-                  node.svg.push(connect.svg);
+                const lastindex = node.infonode.length - 1;
 
-                  node.infonode.station.push({
-                    station: station,
-                  });
+                if (station && line) {
+                  const StationNotifications = notifications
+                    ? notifications.filter((data) =>
+                        data.stations.some(
+                          (data) => data.stationId == station.id
+                        )
+                      )
+                    : [];
 
-                  node.infonode.line[lineindex].pathLength +=
-                    connect.pathLength;
-                } else {
-                  if (!routes.nodes[i + 1]) {
-                    const transferTo = schema?.transitions?.find(
+                  if (routes.nodes[i + 1]) {
+                    const connect = schema?.connections?.find(
                       (data) =>
-                        data.stationFromId == routes.nodes[i] ||
-                        data.stationToId == routes.nodes[i]
+                        (data.stationFromId == routes.nodes[i + 1] &&
+                          data.stationToId == routes.nodes[i]) ||
+                        (data.stationFromId == routes.nodes[i] &&
+                          data.stationToId == routes.nodes[i + 1])
                     );
 
-                    if (transferTo) {
-                      node.infonode.station.push({
-                        station: station,
-                      });
-                    }
-                  } else {
                     const transfer = schema?.transitions?.find(
                       (data) =>
                         (data.stationFromId == routes.nodes[i] &&
@@ -144,25 +125,94 @@ function Navigation() {
                           data.stationToId == routes.nodes[i])
                     );
 
-                    if (transfer) {
-                      node.svg.push(transfer.svg);
+                    if (connect) {
+                      node.svg.push(connect.svg);
 
-                      node.infonode.station.push({
-                        station: station,
-                      });
+                      if (
+                        lastindex != -1 &&
+                        node.infonode[lastindex].type == "connect"
+                      ) {
+                        node.infonode[lastindex].pathLength +=
+                          connect.pathLength;
+                        node.infonode[lastindex].station.push(station);
+                        node.infonode[lastindex].notifications.push(
+                          ...StationNotifications
+                        );
+                      } else {
+                        node.infonode.push({
+                          type: "connect",
+                          line: line,
+                          station: [station],
+                          pathLength: connect.pathLength,
+                          wagon: undefined,
+                          notifications: StationNotifications,
+                        });
+                      }
+                    } else {
+                      if (transfer) {
+                        const wagon = transfer.wagons.find(
+                          (data) =>
+                            (data.stationPrevId == routes.nodes[i + 1] &&
+                              data.stationToId == routes.nodes[i - 1]) ||
+                            (data.stationPrevId == routes.nodes[i - 1] &&
+                              data.stationToId == routes.nodes[i + 1])
+                        );
 
-                      const wagon = transfer.wagons.find(
-                        (data) =>
-                          (data.stationPrevId == routes.nodes[i + 1] &&
-                            data.stationToId == routes.nodes[i - 1]) ||
-                          (data.stationPrevId == routes.nodes[i - 1] &&
-                            data.stationToId == routes.nodes[i + 1])
+                        if (
+                          lastindex != -1 &&
+                          node.infonode[lastindex].type == "connect"
+                        ) {
+                          node.infonode[lastindex].wagon = wagon;
+
+                          node.infonode[lastindex].station.push(station);
+
+                          node.infonode[lastindex].notifications.push(
+                            ...StationNotifications
+                          );
+
+                          node.infonode.push({
+                            type: "transfer",
+                            pathLength: transfer.pathLength,
+                          });
+
+                          node.svg.push(transfer.svg);
+                        } else {
+                          node.svg.push(transfer.svg);
+
+                          node.infonode.push({
+                            type: "connect",
+                            line: line,
+                            station: [station],
+                            pathLength: 0,
+                            wagon: undefined,
+                            notifications: StationNotifications,
+                          });
+
+                          node.infonode.push({
+                            type: "transfer",
+                            pathLength: transfer.pathLength,
+                          });
+                        }
+                      }
+                    }
+                  } else {
+                    if (
+                      lastindex != -1 &&
+                      node.infonode[lastindex].type == "connect"
+                    ) {
+                      node.infonode[lastindex].station.push(station);
+
+                      node.infonode[lastindex].notifications.push(
+                        ...StationNotifications
                       );
-
-                      node.infonode.line.push({
-                        type: "transfer",
-                        wagon: wagon,
-                        pathLength: transfer.pathLength,
+                    } else {
+                      node.infonode.push({
+                        type: "connect",
+                        line: line,
+                        station: [station],
+                        pathLength: 0,
+                        wagon: undefined,
+                        notifications: StationNotifications,
                       });
                     }
                   }
@@ -240,7 +290,7 @@ function Navigation() {
   return filter && schema && notifications ? (
     <>
       <Page className="h-full">
-        <Map />
+        <Maps />
         <Position />
         <SetRegion />
         <Info openerrorroute={openerrorroute} setopennodes={setopennodes} />
@@ -251,8 +301,15 @@ function Navigation() {
       <InfoNodes
         opennodes={opennodes}
         openerrorroute={openerrorroute}
-        setopennodes={setopennodes}
-        setopenerrorroute={setopenerrorroute}
+        nodesrouteback={() => {
+          setopennodes(false);
+        }}
+        errorrouteback={() => {
+          dispatch(setAstation(null));
+          dispatch(setBstation(null));
+
+          setopenerrorroute(false);
+        }}
         reloadnodes={() =>
           Astation && Bstation && handleroute(Astation, Bstation)
         }
@@ -261,6 +318,6 @@ function Navigation() {
   ) : (
     <Reload />
   );
-}
+});
 
 export default Navigation;

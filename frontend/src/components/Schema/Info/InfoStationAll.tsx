@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import i18next from "i18next";
 import { AllLang } from "@/locales/i18n";
 import TimeSeconds from "@/function/TimeSeconds";
+import TimeForDate from "@/function/TimeForDate";
 
 function InfoStationAll({
   station,
@@ -27,7 +28,7 @@ function InfoStationAll({
   transfer,
 }: {
   station: { station: station; line: line };
-  lastupdate: string | null;
+  lastupdate: Date;
   connects: Array<connectinfo>;
   transfer: Array<{ station: station; line: line }>;
 }) {
@@ -63,26 +64,23 @@ function InfoStationAll({
             </span>
           </div>
           {station.station.workTime[day] &&
-          station.station.workTime[day].open &&
-          station.station.workTime[day].close &&
-          lastupdate &&
-          TimeSeconds(lastupdate) >=
-            TimeSeconds(station.station.workTime[day].open) &&
-          (TimeSeconds(lastupdate) >=
-            TimeSeconds(station.station.workTime[day].close) ||
-            TimeSeconds(station.station.workTime[day].open) >=
-              TimeSeconds(station.station.workTime[day].close)) ? (
-            <span className="text-[var(--primary-muted-color)]!">
-              {t("OpenHours", {
-                from: station.station.workTime[day].open,
-                to: station.station.workTime[day].close,
-              })}
-            </span>
-          ) : (
-            <span className="text-[var(--primary-muted-color)]!">
-              {t("NotWorkingToday")}
-            </span>
-          )}
+            station.station.workTime[day].open &&
+            station.station.workTime[day].close &&
+            lastupdate && (
+              <span className="text-[var(--primary-muted-color)]!">
+                {TimeSeconds(TimeForDate(lastupdate)) >=
+                  TimeSeconds(station.station.workTime[day].open) &&
+                (TimeSeconds(TimeForDate(lastupdate)) >=
+                  TimeSeconds(station.station.workTime[day].close) ||
+                  TimeSeconds(station.station.workTime[day].open) >=
+                    TimeSeconds(station.station.workTime[day].close))
+                  ? t("OpenHours", {
+                      from: station.station.workTime[day].open,
+                      to: station.station.workTime[day].close,
+                    })
+                  : t("NotWorkingToday")}
+              </span>
+            )}
         </div>
         <div className="flex flex-col gap-[10px]">
           <div className="flex flex-col gap-[10px]">
@@ -190,7 +188,7 @@ function InfoStationAll({
               ))}
             </div>
             <span className="text-[var(--primary-muted-color)]!">
-              {t("LastUpdateDataTime", { time: lastupdate })}
+              {t("LastUpdateDataTime", { time: TimeForDate(lastupdate) })}
             </span>
             <div className="w-full h-[1px] bg-[var(--primary-border-color)]" />
             {Object.keys(station.station.scheduleTrains).length != 0 && (

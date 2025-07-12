@@ -26,7 +26,7 @@ type filterstation = {
   [K in FilterKeys]: boolean;
 };
 
-type notifications = Array<{
+type notification = {
   alternativeConnections: Array<string>;
   connections: Array<string>;
   description: { ru?: string; en?: string };
@@ -50,7 +50,9 @@ type notifications = Array<{
   }>;
   title: { ru?: string; en?: string };
   transitions: Array<string>;
-}> | null;
+};
+
+type notifications = notification[] | null;
 
 type coordmap = {
   iscenter: boolean;
@@ -277,25 +279,23 @@ type connectinfo = {
 };
 
 type node = {
-  infonode: {
-    station: Array<{
-      station: station;
-    }>;
-    line: Array<
-      | { type: "line"; line: line; pathLength: number }
-      | {
-          type: "transfer";
-          wagon?: wagontransitions;
-          pathLength: number;
-        }
-    >;
-  };
+  infonode: Array<
+    | {
+        type: "connect";
+        line: line;
+        pathLength: number;
+        station: Array<station>;
+        notifications: notification[];
+        wagon?: wagontransitions;
+      }
+    | { type: "transfer"; pathLength: number }
+  >;
   time: number;
   transfer: number;
   svg: Array<string>;
 };
 
-type nodes = Array<node>;
+type nodes = node[];
 
 type route = Array<{
   nodes: Array<number>;
@@ -325,4 +325,5 @@ export type {
   routesave,
   wagontransitions,
   TypeAllPlatfrom,
+  notification,
 };

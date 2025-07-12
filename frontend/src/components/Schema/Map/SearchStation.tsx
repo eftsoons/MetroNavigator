@@ -1,6 +1,6 @@
 import Button from "@/components/Button";
 import { AppDispatch } from "@/redux";
-import { clearRouteSave } from "@/redux/userinfo";
+import { clearRouteSave, setFavoritesSave } from "@/redux/userinfo";
 import NextSVG from "@/svg/next";
 import { station, Store, schema, line } from "@/type";
 import { memo, useMemo, useRef, useState } from "react";
@@ -281,14 +281,35 @@ const SearchStation = memo(() => {
                             handlebackfunction();
                           }}
                         >
-                          <div className="flex flex-col w-[100px] gap-[6px] justify-center  items-center h-full border-solid border-[2px] border-(--primary-border-color) rounded-[10px] p-[8px]! cursor-pointer">
-                            <img
-                              className="w-[20px] h-[20px] object-contain"
-                              src={infoline.icon}
-                            />
-                            <span className="text-center text-[14px] break-all">
-                              {infostation.name[i18next.language as AllLang]}
-                            </span>
+                          <div className="flex flex-col w-full gap-[6px] justify-center items-center h-full border-solid border-[2px] border-(--primary-border-color) rounded-[10px] p-[8px]! cursor-pointer">
+                            <div className="flex flex-col justify-center items-center gap-[6px]">
+                              <img
+                                className="w-[20px] h-[20px] object-contain"
+                                src={infoline.icon}
+                              />
+                              <span className="text-center text-[14px] break-all">
+                                {infostation.name[i18next.language as AllLang]}
+                              </span>
+                            </div>
+                            <Button
+                              style={{
+                                width: "100px",
+                                padding: "8px 6px",
+                                height: "auto",
+                                fontSize: "14px",
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+
+                                dispatch(
+                                  setFavoritesSave({
+                                    stationid: infostation.id,
+                                  })
+                                );
+                              }}
+                            >
+                              {t("Deleted")}
+                            </Button>
                           </div>
                         </SwiperSlide>
                       );

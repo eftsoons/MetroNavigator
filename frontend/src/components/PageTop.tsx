@@ -126,7 +126,7 @@ export function Page({
                     onClick={() => {
                       backfunction && backfunction();
                     }}
-                    className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] fixed top-[1rem] right-[1rem] z-2"
+                    className="h-[28px] w-[28px] p-[8px]! bg-[var(--primary-button)] rounded-[999px] absolute top-[1rem] right-[1rem] z-2"
                   >
                     <CloseSVG />
                   </button>

@@ -99,7 +99,7 @@ function StationInput({
       className="w-full h-[40px] px-[10px]! flex items-center rounded-[10px] gap-[5px] bg-(--primary-color)! border-none!"
     >
       {/* <img className="h-[15px] w-[15px]" src={line.icon} /> */}
-      <div className="h-[20px] w-[20px] flex items-center border-solid border-[1px] border-[var(--primary-muted-color)] text-[var(--primary-muted-color)]! text-[0.75rem] justify-center rounded-[999px]">
+      <div className="h-[20px] shrink-0 w-[20px] flex items-center border-solid border-[1px] border-[var(--primary-muted-color)] text-[var(--primary-muted-color)]! text-[0.75rem] justify-center rounded-[999px]">
         {type}
       </div>
       <span className="flex items-center text-[var(--primary-muted-color)]!">
