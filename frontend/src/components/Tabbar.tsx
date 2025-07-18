@@ -1,5 +1,3 @@
-import { ReactNode } from "react";
-
 import Logo from "@/svg/logo.tsx";
 import News from "@/svg/news";
 import Rating from "@/svg/rating";
@@ -8,23 +6,16 @@ import Support from "@/svg/support";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Store } from "@/type";
-import PageErrorTimeout from "@/pages/PageErrorTimeout";
-import SnackBar from "./SnackBar";
+import { memo } from "react";
 
-function Tabbar({ children }: { children: ReactNode }) {
+const Tabbar = memo(() => {
   const navigate = useNavigate();
   const location = useLocation().pathname;
 
-  const timeouterror = useSelector((data: Store) => data.info.timeouterror);
-  const snackbar = useSelector((data: Store) => data.info.snackbar);
   const AppPlatform = useSelector((data: Store) => data.platform.AppPlatform);
 
   return (
     <>
-      <header className="hidden">тут могла быть ваша реклама!</header>
-      <main className="overflow-x-hidden overflow-y-auto h-full w-full">
-        {!timeouterror ? children : <PageErrorTimeout />}
-      </main>
       <footer
         style={{
           paddingBottom: ["macos", "ios", "mobile_iphone"].includes(AppPlatform)
@@ -104,18 +95,8 @@ function Tabbar({ children }: { children: ReactNode }) {
           <Support />
         </button>
       </footer>
-      {snackbar && (
-        <SnackBar
-          title={snackbar.title}
-          icon={snackbar.icon}
-          onClick={snackbar.onClick}
-          onExit={snackbar.onExit}
-          time={snackbar.time}
-          text={snackbar.text}
-        />
-      )}
     </>
   );
-}
+});
 
 export default Tabbar;

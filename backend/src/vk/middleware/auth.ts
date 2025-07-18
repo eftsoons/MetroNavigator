@@ -11,7 +11,6 @@ export default async (req: Request, res: Response, next: NextFunction) => {
   try {
     const initData = new URLSearchParams(req.headers.authorization);
     const userid = initData.get("vk_user_id");
-    const auth_date = initData.get("vk_ts");
     const refid = Array.isArray(req.headers.refid)
       ? Number(req.headers.refid.join(""))
       : Number(req.headers.refid);
@@ -48,71 +47,55 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       const userinfo = data.data.response[0];
 
       if (userinfo) {
-        if (time - Number(auth_date) <= 7200) {
-          const [userinfobd] = (await DbVkConncet(
-            `SELECT first_name, last_name, last_time, username, photo, time FROM users WHERE vk_id = ?`,
-            [userinfo.id]
-          )) as Array<User>;
+        const [userinfobd] = (await DbVkConncet(
+          `SELECT first_name, last_name, last_time, username, photo, time FROM users WHERE vk_id = ?`,
+          [userinfo.id]
+        )) as Array<User>;
 
-          if (!userinfobd) {
-            if (!refid) {
-              await DbVkConncet(
-                `INSERT IGNORE INTO users(vk_id, last_time, first_name, last_name, username, photo) VALUES (?, ?, ?, ?, ?, ?)`,
-                [
-                  userinfo.id,
-                  time,
-                  userinfo.first_name,
-                  userinfo.last_name,
-                  userinfo.domain,
-                  userinfo.photo_max_orig,
-                ]
-              );
-            } else {
-              if (!isNaN(refid) && refid != userinfo.id) {
-                const [usermyrefbd] = (await DbVkConncet(
-                  `SELECT * FROM users WHERE vk_id = ?`,
-                  [refid]
-                )) as Array<User>;
+        if (!userinfobd) {
+          if (!refid) {
+            await DbVkConncet(
+              `INSERT IGNORE INTO users(vk_id, last_time, first_name, last_name, username, photo) VALUES (?, ?, ?, ?, ?, ?)`,
+              [
+                userinfo.id,
+                time,
+                userinfo.first_name,
+                userinfo.last_name,
+                userinfo.domain,
+                userinfo.photo_max_orig,
+              ]
+            );
+          } else {
+            if (!isNaN(refid) && refid != userinfo.id) {
+              const [usermyrefbd] = (await DbVkConncet(
+                `SELECT * FROM users WHERE vk_id = ?`,
+                [refid]
+              )) as Array<User>;
 
-                if (usermyrefbd) {
-                  await DbVkConncet(
-                    `INSERT INTO users(vk_id, last_time, first_name, last_name, username, photo, myref) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                    [
-                      userinfo.id,
-                      time,
-                      userinfo.first_name,
-                      userinfo.last_name,
-                      userinfo.domain,
-                      userinfo.photo_max_orig,
-                      usermyrefbd.vk_id,
-                    ]
-                  );
+              if (usermyrefbd) {
+                await DbVkConncet(
+                  `INSERT INTO users(vk_id, last_time, first_name, last_name, username, photo, myref) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                  [
+                    userinfo.id,
+                    time,
+                    userinfo.first_name,
+                    userinfo.last_name,
+                    userinfo.domain,
+                    userinfo.photo_max_orig,
+                    usermyrefbd.vk_id,
+                  ]
+                );
 
-                  const ref = usermyrefbd.ref
-                    ? JSON.parse(usermyrefbd.ref)
-                    : [];
+                const ref = usermyrefbd.ref ? JSON.parse(usermyrefbd.ref) : [];
 
-                  ref.push({ vk_id: userinfo.id });
+                ref.push({ vk_id: userinfo.id });
 
-                  const resultref = JSON.stringify(ref);
+                const resultref = JSON.stringify(ref);
 
-                  await DbVkConncet(
-                    `UPDATE users SET ref=?, refcount = refcount + 1 WHERE vk_id = ?`,
-                    [resultref, refid]
-                  );
-                } else {
-                  await DbVkConncet(
-                    `INSERT IGNORE INTO users(vk_id, last_time, first_name, last_name, username, photo) VALUES (?, ?, ?, ?, ?, ?)`,
-                    [
-                      userinfo.id,
-                      time,
-                      userinfo.first_name,
-                      userinfo.last_name,
-                      userinfo.domain,
-                      userinfo.photo_max_orig,
-                    ]
-                  );
-                }
+                await DbVkConncet(
+                  `UPDATE users SET ref=?, refcount = refcount + 1 WHERE vk_id = ?`,
+                  [resultref, refid]
+                );
               } else {
                 await DbVkConncet(
                   `INSERT IGNORE INTO users(vk_id, last_time, first_name, last_name, username, photo) VALUES (?, ?, ?, ?, ?, ?)`,
@@ -126,45 +109,55 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                   ]
                 );
               }
-            }
-          } else {
-            if (
-              userinfobd.first_name != userinfo.first_name ||
-              userinfobd.last_name != userinfo.last_name ||
-              userinfobd.username != userinfo.domain ||
-              userinfobd.photo != userinfo.photo_max_orig
-            ) {
+            } else {
               await DbVkConncet(
-                `UPDATE users SET first_name = ?, last_name = ?, username = ?, photo = ? WHERE vk_id = ?`,
+                `INSERT IGNORE INTO users(vk_id, last_time, first_name, last_name, username, photo) VALUES (?, ?, ?, ?, ?, ?)`,
                 [
+                  userinfo.id,
+                  time,
                   userinfo.first_name,
                   userinfo.last_name,
                   userinfo.domain,
                   userinfo.photo_max_orig,
-                  userinfo.id,
                 ]
               );
             }
-
-            // if (userinfobd.last_time && path == "/time") {
-            //   if (time - userinfobd.last_time > 7) {
-            //     await getDbConnection(
-            //       `UPDATE users SET time = time + 10 WHERE vk_id = ?`,
-            //       [userinfo.id]
-            //     );
-            //   }
-            // }
-
-            // await getDbConnection(
-            //   `UPDATE users SET last_time = ? WHERE vk_id = ?`,
-            //   [time, userinfo.id]
-            // );
+          }
+        } else {
+          if (
+            userinfobd.first_name != userinfo.first_name ||
+            userinfobd.last_name != userinfo.last_name ||
+            userinfobd.username != userinfo.domain ||
+            userinfobd.photo != userinfo.photo_max_orig
+          ) {
+            await DbVkConncet(
+              `UPDATE users SET first_name = ?, last_name = ?, username = ?, photo = ? WHERE vk_id = ?`,
+              [
+                userinfo.first_name,
+                userinfo.last_name,
+                userinfo.domain,
+                userinfo.photo_max_orig,
+                userinfo.id,
+              ]
+            );
           }
 
-          next();
-        } else {
-          res.status(408).send({ process: false, msg: "Timeout" });
+          // if (userinfobd.last_time && path == "/time") {
+          //   if (time - userinfobd.last_time > 7) {
+          //     await getDbConnection(
+          //       `UPDATE users SET time = time + 10 WHERE vk_id = ?`,
+          //       [userinfo.id]
+          //     );
+          //   }
+          // }
+
+          // await getDbConnection(
+          //   `UPDATE users SET last_time = ? WHERE vk_id = ?`,
+          //   [time, userinfo.id]
+          // );
         }
+
+        next();
       } else {
         res.status(404).send({ process: false, msg: "Error" });
       }

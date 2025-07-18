@@ -10,6 +10,7 @@ import {
 import {
   isTMA,
   locationManager,
+  postEvent,
   retrieveLaunchParams,
 } from "@telegram-apps/sdk";
 import {
@@ -26,11 +27,12 @@ import { setInfoUser } from "./redux/userinfo";
 import { setRegion } from "./redux/info";
 
 import i18n from "i18next";
+import { EnhancedStore } from "@reduxjs/toolkit";
 
 /**
  * Initializes the application and configures its dependencies.
  */
-export function init(store: any): void {
+export function init(store: EnhancedStore): void {
   const dataURL = new URLSearchParams(location.search);
 
   const vkid = dataURL.get("vk_user_id");
@@ -69,6 +71,8 @@ export function init(store: any): void {
     const startParam = initData.startParam();
     const isDark = miniApp.isDark();
 
+    postEvent("web_app_ready");
+
     store.dispatch(setPlatform("tg"));
     store.dispatch(setAppPlatform(lp.tgWebAppPlatform));
     store.dispatch(setAppRaw(raw));
@@ -83,11 +87,9 @@ export function init(store: any): void {
 
     console.log("It's tg");
   } else if (bridge.isEmbedded() && vkid) {
-    store.dispatch(setPlatform("vk"));
-
-    const dataURL = new URLSearchParams(location.search);
     const language = dataURL.get("vk_language");
 
+    store.dispatch(setPlatform("vk"));
     store.dispatch(setAppRaw(location.origin + location.search));
     store.dispatch(setAppPlatform(dataURL.get("vk_platform")));
     store.dispatch(setRegion("mos"));
@@ -114,30 +116,18 @@ export function init(store: any): void {
       store.dispatch(setisDark(data.appearance == "dark"));
     });
 
-    bridge
-      .send("VKWebAppCallAPIMethod", {
-        method: "users.get",
-        params: {
-          user_id: vkid,
-          v: "5.199",
-          access_token: import.meta.env.VITE_API_TOKEN_VK,
-          fields: "domain,photo_max_orig",
-        },
-      })
-      .then((data) => {
-        const [userinfo] = data.response;
-
-        store.dispatch(
-          setInfoUser({
-            id: userinfo.id,
-            first_name: userinfo.first_name,
-            last_name: userinfo.last_name,
-            photo_url: userinfo.photo_max_orig,
-            username: userinfo.domain,
-            language_code: dataURL.get("vk_language"),
-          })
-        );
-      });
+    bridge.send("VKWebAppGetUserInfo").then((userinfo) => {
+      store.dispatch(
+        setInfoUser({
+          id: userinfo.id,
+          first_name: userinfo.first_name,
+          last_name: userinfo.last_name,
+          photo_url: userinfo.photo_max_orig,
+          username: `id${userinfo.id}`,
+          language_code: dataURL.get("vk_language"),
+        })
+      );
+    });
 
     bridge.subscribe((data) => {
       if (data.detail.type == "VKWebAppUpdateConfig") {
@@ -162,21 +152,6 @@ export function init(store: any): void {
         }
       }
     });
-
-    // bridge.send("VKWebAppGetUserInfo").then((data) => {
-    //   //пофиксить username
-    //   console.log(data);
-    //   store.dispatch(
-    //     setInfoUser({
-    //       id: data.id,
-    //       first_name: data.first_name,
-    //       last_name: data.last_name,
-    //       photo_url: data.photo_max_orig,
-    //       username: data.id,
-    //       language_code: dataURL.get("vk_language"),
-    //     })
-    //   );
-    // });
 
     if (language) {
       i18n.changeLanguage(language);

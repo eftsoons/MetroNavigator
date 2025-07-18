@@ -80,7 +80,7 @@ export default async (msg: Message) => {
               {
                 text: t("mos"),
                 web_app: {
-                  url: `https://apps.miniappsmetro.ru`,
+                  url: `https://apps.miniappsmetro.ru/`,
                 },
               },
             ],

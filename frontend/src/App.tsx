@@ -20,6 +20,8 @@ import {
 import { Store } from "./type";
 import GetStation from "./function/GetStation";
 import { getSchemaImg } from "./redux/schemaimg";
+import PageErrorTimeout from "./pages/PageErrorTimeout";
+import SnackBar from "./components/SnackBar";
 // import bridge from "@vkontakte/vk-bridge";
 
 export function App() {
@@ -32,6 +34,8 @@ export function App() {
   const region = useSelector((data: Store) => data.info.region);
   const isDark = useSelector((data: Store) => data.platform.isDark);
   const startParam = useSelector((data: Store) => data.platform.startParam);
+  const timeouterror = useSelector((data: Store) => data.info.timeouterror);
+  const snackbar = useSelector((data: Store) => data.info.snackbar);
 
   useEffect(() => {
     dispatch(fetchUser());
@@ -135,16 +139,30 @@ export function App() {
       className="overflow-x-hidden flex flex-col h-full"
     >
       <HashRouter>
-        <Routes>
-          {routes.map((route) => (
-            <Route
-              key={route.path}
-              element={<Tabbar>{route.Element}</Tabbar>}
-              {...route}
-            />
-          ))}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        <header className="hidden">тут могла быть ваша реклама!</header>
+        <main className="overflow-x-hidden overflow-y-auto h-full w-full">
+          {!timeouterror ? (
+            <Routes>
+              {routes.map((route) => (
+                <Route key={route.path} element={route.Element} {...route} />
+              ))}
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          ) : (
+            <PageErrorTimeout />
+          )}
+        </main>
+        <Tabbar />
+        {snackbar && (
+          <SnackBar
+            title={snackbar.title}
+            icon={snackbar.icon}
+            onClick={snackbar.onClick}
+            onExit={snackbar.onExit}
+            time={snackbar.time}
+            text={snackbar.text}
+          />
+        )}
       </HashRouter>
     </AppRoot>
   );
