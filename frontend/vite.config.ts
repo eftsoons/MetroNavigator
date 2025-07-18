@@ -15,9 +15,9 @@ export default defineConfig({
     tailwindcss(),
   ],
   publicDir: "./public",
-  server: {
-    // Exposes your dev server and makes it accessible for the devices in the same network.
-    allowedHosts: ["test.miniappsmetro.ru"],
-    host: true,
-  },
+  // server: {
+  //   // Exposes your dev server and makes it accessible for the devices in the same network.
+  //   allowedHosts: ["test.miniappsmetro.ru"],
+  //   host: true,
+  // },
 });
