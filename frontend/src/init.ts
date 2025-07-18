@@ -83,11 +83,9 @@ export function init(store: any): void {
 
     console.log("It's tg");
   } else if (bridge.isEmbedded() && vkid) {
-    store.dispatch(setPlatform("vk"));
-
-    const dataURL = new URLSearchParams(location.search);
     const language = dataURL.get("vk_language");
 
+    store.dispatch(setPlatform("vk"));
     store.dispatch(setAppRaw(location.origin + location.search));
     store.dispatch(setAppPlatform(dataURL.get("vk_platform")));
     store.dispatch(setRegion("mos"));
